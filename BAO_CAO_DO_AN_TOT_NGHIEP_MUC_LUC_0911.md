@@ -66,7 +66,7 @@ Trong lần chạy suy luận được lưu cho video mẫu 2568 × 1440, hệ t
 
 # MỤC LỤC
 
-> Bản báo cáo được sắp xếp theo mục lục cập nhật ngày 09/11. Ký hiệu `[H]` là hình, `[B]` là bảng; đánh số theo chương. Cập nhật số trang tự động sau khi dàn trang.
+> Cấu trúc chương và đề mục bám theo “MỤC LỤC NGÀY 9/11” ở cuối tài liệu `tailieuvietbaocao.txt`. Cập nhật số trang tự động sau khi dàn trang.
 
 - Phần đầu thuyết minh
 - Mở đầu
@@ -76,51 +76,87 @@ Trong lần chạy suy luận được lưu cho video mẫu 2568 × 1440, hệ t
   - 0.4. Giới hạn đề tài và kết quả đạt được
   - 0.5. Bố cục đồ án
 - Chương 1. Cơ sở lý thuyết
-  - 1.1. Mô tả bài toán
-    - 1.1.1. Bài toán phát hiện ô tô vượt vạch dừng khi đèn đỏ
-    - 1.1.2. Quy định pháp luật liên quan
-    - 1.1.3. Các khó khăn và thách thức kỹ thuật
-  - 1.2. Thị giác máy tính và bài toán theo dõi đối tượng
-    - 1.2.1. Phát hiện đối tượng và họ mô hình YOLO
-    - 1.2.2. Theo dõi đa đối tượng: SORT, DeepSORT, ByteTrack, Kalman, Hungarian
-    - 1.2.3. Xử lý ảnh: trạng thái đèn, hình học vạch dừng, phép chiếu phối cảnh
-    - 1.2.4. Các chỉ số đánh giá phát hiện, theo dõi và sự kiện
-  - 1.3. Định hướng giải quyết
-    - 1.3.1. Hướng tiếp cận tổng quát
-    - 1.3.2. Hướng cải tiến bộ theo dõi
-  - 1.4. Nghiên cứu liên quan, nhận xét và khoảng trống nghiên cứu
-- Chương 2. Phân tích thiết kế hệ thống
+  - 1.1. Giới thiệu về thị giác máy tính
+    - 1.1.1. Khái niệm thị giác máy tính
+    - 1.1.2. Vai trò và ý nghĩa trong giao thông thông minh
+    - 1.1.3. Các bài toán cơ bản trong thị giác máy tính
+  - 1.2. Các bài toán sử dụng trong đề tài
+    - 1.2.1. Bài toán phát hiện đối tượng
+    - 1.2.2. Bài toán theo dõi đa đối tượng
+    - 1.2.3. Bài toán xử lý ảnh hỗ trợ
+  - 1.3. Các thuật toán sử dụng
+    - 1.3.1. Họ mô hình YOLO
+    - 1.3.2. Bộ lọc Kalman và ghép cặp Hungarian
+    - 1.3.3. Các thuật toán theo dõi: SORT, DeepSORT, ByteTrack
+    - 1.3.4. Phép chiếu homography
+  - 1.4. Tổng quan về giám sát vi phạm giao thông
+    - 1.4.1. Quy định pháp luật về dừng xe khi đèn đỏ
+    - 1.4.2. Vấn đề tồn tại trong giám sát hiện nay
+  - 1.5. Giới thiệu về đề tài
+- Chương 2. Phân tích và thiết kế hệ thống
   - 2.1. Phân tích yêu cầu
+    - 2.1.1. Mô tả bài toán và các khó khăn kỹ thuật
+    - 2.1.2. Yêu cầu chức năng
+    - 2.1.3. Yêu cầu phi chức năng
   - 2.2. Kiến trúc tổng thể
+    - 2.2.1. Sơ đồ kiến trúc hệ thống
+    - 2.2.2. Lưu đồ xử lý mỗi khung hình
   - 2.3. Thiết kế các module
+    - 2.3.1. Module thu nhận và tiền xử lý video
+    - 2.3.2. Module phát hiện ô tô bằng YOLO
+    - 2.3.3. Module theo dõi đối tượng (bộ theo dõi đề xuất)
+    - 2.3.4. Module nhận diện trạng thái đèn tín hiệu
+    - 2.3.5. Module thiết lập vạch dừng và vùng quan tâm
+    - 2.3.6. Module phát hiện vi phạm
+    - 2.3.7. Module lưu bằng chứng và dữ liệu đầu ra
   - 2.4. Thiết kế thuật toán phát hiện vi phạm
+    - 2.4.1. Điều kiện vi phạm và điểm tham chiếu của xe
+    - 2.4.2. Phân biệt xe chờ, xe vượt vạch, xe trong giao lộ
+    - 2.4.3. Xử lý che khuất, mất ID và tránh báo trùng
+    - 2.4.4. Bảng tham số và cách chọn tham số
   - 2.5. Thiết kế dữ liệu và giao diện
+    - 2.5.1. Cấu trúc dữ liệu đầu vào, đầu ra
+    - 2.5.2. Thiết kế giao diện người dùng
+    - 2.5.3. Sơ đồ tuần tự luồng chính
 - Chương 3. Xây dựng hệ thống
   - 3.1. Công cụ và công nghệ sử dụng
   - 3.2. Xây dựng bộ dữ liệu
+    - 3.2.1. Nguồn dữ liệu và chuẩn bị dữ liệu
+    - 3.2.2. Tiền xử lý và gán nhãn
+    - 3.2.3. Chia tập dữ liệu
+    - 3.2.4. Tăng cường dữ liệu
   - 3.3. Huấn luyện mô hình phát hiện
+    - 3.3.1. Môi trường phần cứng và phần mềm
+    - 3.3.2. Siêu tham số huấn luyện
+    - 3.3.3. Kết quả huấn luyện và validation
   - 3.4. Cài đặt và tích hợp hệ thống
+    - 3.4.1. Cấu trúc mã nguồn
+    - 3.4.2. Cài đặt các module chính
+    - 3.4.3. Giao diện hệ thống
   - 3.5. Kiểm thử phần mềm
-  - 3.6. Đóng góp của sinh viên
+    - 3.5.1. Kiểm thử đơn vị và kiểm thử chức năng
+    - 3.5.2. Kiểm tra tính đúng đắn của bộ theo dõi
 - Chương 4. Thực nghiệm và đánh giá kết quả
   - 4.1. Thiết lập thực nghiệm
     - 4.1.1. Bộ video thử nghiệm
     - 4.1.2. Gán nhãn ground truth cấp sự kiện vi phạm
-    - 4.1.3. Các chỉ số đánh giá
+    - 4.1.3. Các chỉ số đánh giá (phát hiện, theo dõi, cấp sự kiện)
   - 4.2. Đánh giá bộ theo dõi
     - 4.2.1. So sánh các thuật toán theo dõi
-    - 4.2.2. Thiết kế ablation và kết quả
+    - 4.2.2. Thiết kế ablation (cấu hình A–F) và kết quả
   - 4.3. Đánh giá hệ thống ở cấp sự kiện vi phạm
     - 4.3.1. Kết quả tổng thể
-    - 4.3.2. Kết quả theo từng điều kiện
+    - 4.3.2. Kết quả theo từng điều kiện (ngày/đêm, mật độ xe, góc quay)
     - 4.3.3. Phân tích độ nhạy tham số
-    - 4.3.4. Hình ảnh minh họa kết quả
   - 4.4. Tốc độ xử lý và khả năng triển khai
   - 4.5. Phân tích lỗi và thảo luận
     - 4.5.1. Phân loại các trường hợp lỗi
     - 4.5.2. Ưu điểm và nhược điểm
     - 4.5.3. Khả năng ứng dụng thực tế, quyền riêng tư và đạo đức dữ liệu
 - Kết luận và hướng phát triển
+  - 1. Kết quả đạt được
+  - 2. Hạn chế
+  - 3. Hướng phát triển
 - Tài liệu tham khảo
 - Phụ lục
 
@@ -128,11 +164,11 @@ Trong lần chạy suy luận được lưu cho video mẫu 2568 × 1440, hệ t
 
 # DANH MỤC CÁC BẢNG
 
-Danh sách số hiệu và tiêu đề Bảng 1.1–1.4, Bảng 2.1–2.5, Bảng 3.1–3.14, Bảng 4.1–4.9 và Bảng K.1 được tạo tự động sau khi dàn trang.
+Danh sách số hiệu và tiêu đề Bảng 1.1–1.2, Bảng 2.1–2.5, Bảng 3.1–3.14, Bảng 4.1–4.9 và Bảng K.1 được tạo tự động sau khi dàn trang.
 
 # DANH MỤC CÁC HÌNH
 
-Danh sách số hiệu và tiêu đề Hình 1.1–1.4, Hình 2.1–2.14, Hình 3.1–3.7 và Hình 4.1–4.6 được tạo tự động sau khi dàn trang. Các sơ đồ Mermaid cần được render thành ảnh nếu phần mềm dàn trang không hỗ trợ Mermaid; hình cần ảnh/video thực tế được ghi chú tại vị trí tương ứng.
+Danh sách số hiệu và tiêu đề Hình 1.1–1.3, Hình 2.1–2.14, Hình 3.1–3.7 và Hình 4.1–4.6 được tạo tự động sau khi dàn trang. Các sơ đồ Mermaid cần được render thành ảnh nếu phần mềm dàn trang không hỗ trợ Mermaid; hình cần ảnh/video thực tế được ghi chú tại vị trí tương ứng.
 
 # DANH MỤC KÝ HIỆU, CHỮ VIẾT TẮT VÀ THUẬT NGỮ
 
@@ -183,177 +219,183 @@ Về thực tiễn, video gắn nhãn và danh sách sự kiện giúp người 
 
 ## 0.5. Bố cục đồ án
 
-Chương 1 trình bày bài toán, cơ sở lý thuyết và định hướng giải pháp; Chương 2 phân tích, thiết kế hệ thống; Chương 3 trình bày công cụ, dữ liệu, huấn luyện, cài đặt, kiểm thử và đóng góp; Chương 4 trình bày thực nghiệm, đánh giá và thảo luận. Báo cáo kết thúc bằng kết luận, hướng phát triển, tài liệu tham khảo và phụ lục.
+Chương 1 giới thiệu thị giác máy tính, thuật toán nền tảng và bài toán giám sát; Chương 2 phân tích, thiết kế hệ thống; Chương 3 trình bày dữ liệu, huấn luyện, cài đặt và kiểm thử; Chương 4 trình bày thực nghiệm, đánh giá và thảo luận. Báo cáo kết thúc bằng kết luận, hướng phát triển, tài liệu tham khảo và phụ lục.
 
 ---
 
-# PHẦN 1 – ĐẶT VẤN ĐỀ VÀ ĐỊNH HƯỚNG GIẢI PHÁP
-
-**Khối lượng dự kiến:** không quá 20 trang theo đề cương của Khoa.
-**Nhiệm vụ:** mô tả bài toán, kiến thức nền tảng và lý do lựa chọn các thành phần kỹ thuật.
-
 # CHƯƠNG 1. CƠ SỞ LÝ THUYẾT
 
-## 1.1. Mô tả bài toán
+## 1.1. Giới thiệu về thị giác máy tính
 
-### 1.1.1. Bài toán phát hiện ô tô vượt vạch dừng khi đèn đỏ
+### 1.1.1. Khái niệm thị giác máy tính
 
-Đầu vào của hệ thống là chuỗi khung hình \(I_1, I_2, \ldots, I_T\) từ một camera cố định. Với mỗi khung hình, hệ thống cần xác định hộp phương tiện, lớp phương tiện, hộp đèn và lớp màu đèn; đồng thời liên kết các phát hiện phương tiện qua thời gian thành các track có ID ổn định. Một sự kiện ứng viên được tạo khi quỹ đạo của một track đi từ phía tiếp cận qua vạch dừng, giao điểm nằm trên đoạn vạch đã cấu hình và trạng thái đèn tại thời điểm giao cắt là đỏ.
+Thị giác máy tính (Computer Vision) là lĩnh vực nghiên cứu các phương pháp giúp máy tính tiếp nhận và phân tích ảnh hoặc video để trích xuất thông tin có ý nghĩa. Một hệ thống thị giác máy tính thường chuyển đổi dữ liệu pixel thành các biểu diễn như lớp đối tượng, hộp giới hạn, vùng phân đoạn, quỹ đạo hoặc sự kiện. Kết quả phụ thuộc vào dữ liệu đầu vào, góc quan sát, điều kiện ánh sáng, chất lượng cảm biến và thuật toán được lựa chọn.
 
-### 1.1.2. Quy định pháp luật liên quan
+Trong đề tài này, dữ liệu đầu vào là video từ camera cố định. Hệ thống phân tích từng khung hình để nhận diện phương tiện và trạng thái đèn, sau đó liên kết kết quả theo thời gian và đối chiếu quỹ đạo với vạch dừng. Do đó, đầu ra không phải một dự đoán ảnh đơn lẻ mà là chuỗi track cùng các sự kiện ứng viên có thời điểm và bằng chứng đi kèm.
 
-Hệ thống chỉ tạo sự kiện kỹ thuật để hỗ trợ rà soát; việc xác định hành vi vi phạm và áp dụng chế tài thuộc thẩm quyền của cơ quan/người có thẩm quyền. Căn cứ pháp lý cần đối chiếu theo thời điểm hoàn thiện báo cáo, bao gồm Luật Trật tự, an toàn giao thông đường bộ số 36/2024/QH15 và Nghị định số 168/2024/NĐ-CP cùng văn bản sửa đổi, bổ sung hoặc thay thế nếu có.
+### 1.1.2. Vai trò và ý nghĩa trong giao thông thông minh
 
-**Bảng 1.1. Văn bản pháp luật cần đối chiếu khi hoàn thiện báo cáo**
+Trong giao thông thông minh, thị giác máy tính có thể hỗ trợ thống kê lưu lượng, phân loại phương tiện, theo dõi dòng xe, phân tích tình trạng ùn tắc và hỗ trợ phát hiện một số sự kiện cần con người xem xét. Khả năng phân tích video giúp tận dụng hạ tầng camera sẵn có, nhưng độ tin cậy phụ thuộc vào vị trí lắp đặt, trường nhìn, độ phân giải, ánh sáng và điều kiện vận hành.
 
-| Văn bản | Phạm vi liên quan | Tình trạng nội dung trong bản thảo |
-|---|---|---|
-| Luật số 36/2024/QH15 | Quy tắc chấp hành tín hiệu và vạch dừng | Cần trích đúng điều, khoản áp dụng |
-| Nghị định số 168/2024/NĐ-CP | Chế tài hành vi không chấp hành đèn tín hiệu | Cần xác nhận mức phạt hiện hành, đối tượng và điều khoản |
-| Văn bản sửa đổi/thay thế (nếu có) | Hiệu lực tại thời điểm nộp | Cần kiểm tra trên nguồn pháp luật chính thức |
+Với bài toán giám sát đèn đỏ, lợi ích tiềm năng là hỗ trợ người vận hành tìm nhanh các đoạn video cần xem lại. Hệ thống tự động chỉ đưa ra gợi ý kỹ thuật; việc xác minh sự kiện và quyết định nghiệp vụ thuộc về con người/cơ quan có thẩm quyền. Cần bảo vệ dữ liệu hình ảnh, giới hạn quyền truy cập và tránh sử dụng dự đoán tự động như bằng chứng kết luận duy nhất.
 
-Không đưa mức phạt cụ thể vào báo cáo trước khi xác nhận điều khoản, đối tượng áp dụng và hiệu lực văn bản tại ngày nộp.
+### 1.1.3. Các bài toán cơ bản trong thị giác máy tính
 
-### 1.1.3. Các vấn đề cần giải quyết
+Các tác vụ thường gặp gồm phân loại ảnh, phát hiện đối tượng, phân đoạn ảnh, ước lượng tư thế, theo dõi đối tượng và nhận dạng sự kiện. Phân loại gán nhãn cho toàn ảnh; phát hiện đối tượng tìm đồng thời nhãn và vị trí từng vật thể; phân đoạn xác định vùng pixel thuộc vật thể; theo dõi liên kết phát hiện qua nhiều khung hình để duy trì danh tính. Nhận dạng sự kiện tổng hợp tín hiệu theo thời gian để mô tả một hành vi hoặc trạng thái.
 
-1. **Phát hiện vật thể nhỏ và đa tỷ lệ:** đèn tín hiệu thường chỉ chiếm một vùng nhỏ trong toàn khung hình; xe có thể bị che khuất hoặc có kích thước thay đổi theo khoảng cách.
-2. **Theo dõi qua thời gian:** phương tiện bị che khuất, thay đổi kích thước hoặc detector bỏ lỡ ở một vài frame có thể làm track bị ngắt hoặc đổi ID.
-3. **Xác định trạng thái đèn:** cần tránh đổi trạng thái theo một dự đoán đơn lẻ và phải xử lý khoảng thời gian không có phát hiện.
-4. **Kiểm tra hình học:** một phương tiện ở phía bên kia vạch ngay từ frame đầu không đồng nghĩa với việc nó vừa vượt vạch trong video.
-5. **Đồng bộ thời gian:** màu đèn phải được xét tại thời điểm track cắt qua vạch, không chỉ tại frame đang hiển thị sau đó.
+Đề tài sử dụng phát hiện để tìm phương tiện và đèn tín hiệu; theo dõi đa đối tượng để duy trì ID phương tiện; xử lý ảnh để giới hạn vùng quan sát, ước lượng màu đèn và kiểm tra vị trí xe so với vạch. Các tác vụ này được ghép thành pipeline thay vì xem một nhãn phát hiện đơn lẻ là đủ để kết luận xe vừa vượt vạch.
 
-Trong phạm vi đồ án, hệ thống xác định giao cắt trên ảnh hai chiều bằng tọa độ pixel và đoạn vạch do người dùng đánh dấu. Do không có hiệu chuẩn camera và tọa độ thế giới, hệ thống không suy ra khoảng cách hay tốc độ thực tế.
+## 1.2. Các bài toán sử dụng trong đề tài
 
-## 1.2. Thị giác máy tính và bài toán theo dõi đối tượng
+### 1.2.1. Bài toán phát hiện đối tượng
 
-### 1.2.1. Phát hiện đối tượng và họ mô hình YOLO
-
-Phát hiện đối tượng là bài toán dự đoán vị trí và lớp của nhiều vật thể trong một ảnh. Mỗi dự đoán thường gồm hộp giới hạn, nhãn lớp và độ tin cậy.
-
-Với hộp dự đoán \(B_p\) và hộp chuẩn \(B_g\), IoU được tính:
+Phát hiện đối tượng dự đoán hộp giới hạn, lớp và độ tin cậy cho từng vật thể trong một ảnh. Với hộp dự đoán \(B_p\) và hộp chuẩn \(B_g\), giao trên hợp được tính bằng:
 
 \[
 \operatorname{IoU}(B_p,B_g)=\frac{|B_p \cap B_g|}{|B_p \cup B_g|}.
 \]
 
-Precision là tỷ lệ phát hiện đúng trong số các phát hiện được đưa ra; Recall là tỷ lệ vật thể chuẩn được tìm thấy. AP là diện tích dưới đường Precision–Recall cho một lớp. mAP50 lấy AP tại IoU ngưỡng 0,50; mAP50–95 lấy trung bình AP ở nhiều ngưỡng IoU từ 0,50 đến 0,95. Các chỉ số trong `results.csv` được ghi trên tập validation.
+Precision đo tỷ lệ dự đoán đúng trong số dự đoán được đưa ra; Recall đo tỷ lệ đối tượng chuẩn được tìm thấy. Average Precision (AP) là diện tích dưới đường Precision–Recall cho một lớp. mAP50 là AP tại ngưỡng IoU 0,50; mAP50–95 lấy trung bình AP ở các ngưỡng IoU từ 0,50 đến 0,95. Trong báo cáo, các chỉ số này được tính ở cấp detector trên validation; chúng không thể thay thế đánh giá độ chính xác sự kiện vi phạm.
 
-#### 1.2.1.1. Họ mô hình YOLO
+Các lớp detector của dự án là `bus`, `car`, `truck`, `green`, `red`, `yellow`. Đèn giao thông có kích thước nhỏ so với ảnh tổng thể, vì vậy hệ thống cắt vùng ROI đèn để suy luận riêng; phương tiện được phát hiện trên khung hình đã tiền xử lý.
 
-YOLO là họ mô hình phát hiện một giai đoạn, dự đoán trực tiếp hộp và lớp từ ảnh qua mạng nơ-ron. Mô hình thường được mô tả qua Backbone trích xuất đặc trưng, Neck kết hợp đặc trưng nhiều tỷ lệ và Head dự đoán hộp/lớp. Đây là mô tả khái quát; cấu trúc chi tiết thay đổi theo phiên bản. Trong dự án, mô hình khởi tạo được ghi trong `args.yaml` là `yolo26s.pt`, ảnh huấn luyện có kích thước 640. Không gọi checkpoint này là YOLO26n chỉ dựa trên tên hiển thị ở giao diện web.
+### 1.2.2. Bài toán theo dõi đa đối tượng
+
+Theo dõi đa đối tượng (MOT) liên kết các hộp phát hiện giữa các khung hình thành các track có ID. Cách tiếp cận tracking-by-detection dùng kết quả detector làm đầu vào, dự đoán vị trí tiếp theo của track, tính chi phí ghép giữa track và detection rồi giải bài toán gán cặp. Che khuất, detection bị bỏ lỡ, xe chạy gần nhau và thay đổi kích thước có thể gây mất track hoặc ID switch.
+
+Bộ lọc Kalman thường được dùng để dự đoán trạng thái chuyển động từ lịch sử quan sát; thuật toán Hungarian tìm cách gán cặp có tổng chi phí nhỏ nhất. Chất lượng MOT cần được đo bằng nhãn danh tính theo từng frame và các chỉ số như IDF1, MOTA, HOTA, IDSW. Bộ dữ liệu hiện có chủ yếu là nhãn detection YOLO, do đó các chỉ số MOT không được tự suy diễn từ số ID do hệ thống xuất ra.
+
+Ở cấp sự kiện, TP là sự kiện hệ thống khớp với ground truth theo video, hướng xe và dung sai thời gian đã định; FP là dự đoán không có nhãn sự kiện tương ứng; FN là sự kiện chuẩn bị bỏ sót. Từ đó tính Precision = TP/(TP+FP), Recall = TP/(TP+FN), F1 = 2×Precision×Recall/(Precision+Recall). Cần định nghĩa quy tắc ghép trước khi đánh giá; các chỉ số sự kiện hiện chưa tính do chưa có ground truth.
+
+### 1.2.3. Bài toán xử lý ảnh hỗ trợ
+
+ROI (Region of Interest) là vùng ảnh được chọn cho một nhiệm vụ. ROI phương tiện giới hạn khu vực cần theo dõi; ROI đèn tập trung suy luận vào cụm tín hiệu nhỏ. Trong hệ thống, các ROI và vạch dừng được thiết lập thủ công theo từng camera và lưu theo độ phân giải gốc.
+
+Không gian màu HSV biểu diễn sắc độ, độ bão hòa và độ sáng; dự án sử dụng HSV để kiểm tra heuristic màu trong patch quanh hộp đèn và tính histogram màu hỗ trợ nối track. Tín hiệu HSV nhạy với ánh sáng, vùng nền và chất lượng ảnh, vì vậy không thay thế dự đoán của mô hình.
+
+Hình học vạch dừng được biểu diễn bằng một đoạn thẳng hữu hạn trên ảnh. Một điểm tham chiếu của xe được so sánh với đường có hướng để xác định track đang ở phía tiếp cận hay phía sau vạch. Phép chiếu homography có thể ánh xạ giữa mặt phẳng ảnh và mặt phẳng đường khi có các cặp điểm tương ứng/hiệu chuẩn phù hợp; phiên bản hiện tại chưa hiệu chuẩn camera và chưa dùng homography, nên mọi tọa độ và ngưỡng đều tính theo pixel, không suy ra khoảng cách thực địa.
+
+## 1.3. Các thuật toán sử dụng
+
+### 1.3.1. Họ mô hình YOLO
+
+YOLO là họ mô hình phát hiện một giai đoạn, dự đoán trực tiếp vị trí và lớp đối tượng từ ảnh. Kiến trúc thường được mô tả khái quát qua Backbone trích xuất đặc trưng, Neck kết hợp đặc trưng nhiều tỷ lệ và Head dự đoán hộp/lớp; cấu trúc cụ thể thay đổi theo phiên bản. Hồ sơ train ghi mô hình khởi tạo `yolo26s.pt`, kích thước ảnh 640. Không suy diễn biến thể model chỉ từ tên hiển thị trên giao diện.
 
 **Hình 1.1. Sơ đồ khái quát Backbone–Neck–Head của detector YOLO**
-*Nguồn: cần vẽ lại theo tài liệu chính thức của đúng phiên bản YOLO được sử dụng; đây không phải sơ đồ kiến trúc chi tiết của YOLO26s.*
 
-### 1.2.2. Theo dõi đa đối tượng
+```mermaid
+flowchart LR
+    I[Ảnh đầu vào] --> B[Backbone: trích xuất đặc trưng]
+    B --> N[Neck: kết hợp đặc trưng nhiều tỷ lệ]
+    N --> H[Head: dự đoán hộp và lớp]
+    H --> O[Hộp giới hạn, nhãn, độ tin cậy]
+```
 
-Tracking-by-detection nhận các hộp do detector tạo ở mỗi frame, sau đó liên kết chúng với các track trước đó. ByteTrack sử dụng các phát hiện có độ tin cậy cao ở lượt liên kết chính và tận dụng các phát hiện độ tin cậy thấp ở lượt tiếp theo để giữ track khi vật thể bị che khuất hoặc detector kém chắc chắn. Dự án giữ `model.track(..., tracker="bytetrack.yaml")` của Ultralytics làm chế độ mặc định, đồng thời có module tùy chọn `tracker/` tự triển khai trạng thái track, Kalman xyah, IoU/Hungarian, liên kết hai lượt và quản lý track mất dấu. Tham số baseline được đối chiếu với `bytetrack.yaml` của phiên bản Ultralytics cài trong môi trường; module tự cài không gọi API tracking của Ultralytics.
+*Sơ đồ khái quát; không mô tả chi tiết nội bộ riêng của YOLO26s.*
 
-Các ý tưởng thường dùng trong MOT gồm dự đoán vị trí bằng bộ lọc Kalman và gán cặp bằng thuật toán Hungarian. SORT chủ yếu ghép theo chuyển động và IoU; DeepSORT bổ sung đặc trưng ngoại hình; ByteTrack khai thác detection điểm thấp ở lượt ghép thứ hai. Đây là so sánh định tính theo cơ chế, không phải kết quả benchmark trên dữ liệu đồ án.
+### 1.3.2. Bộ lọc Kalman và ghép cặp Hungarian
 
-**Bảng 1.2. So sánh định tính một số bộ theo dõi đa đối tượng**
+Bộ lọc Kalman ước lượng trạng thái ẩn qua hai bước lặp. Bước dự đoán ngoại suy trạng thái từ mô hình chuyển động; bước cập nhật hiệu chỉnh dự đoán khi nhận được detection mới. Trong tracker tự cài, trạng thái bbox được biểu diễn theo tâm, tỷ lệ khung và chiều cao (XYAH), sau đó cập nhật theo quan sát. Bộ lọc làm mượt quỹ đạo nhưng không tự nhận diện danh tính và có thể trôi khi đối tượng bị mất dấu lâu.
+
+Sau dự đoán, chi phí liên kết giữa track và detection được lập từ độ chồng lấp IoU cùng các điều kiện bổ sung nếu được bật. Thuật toán Hungarian tìm phép gán một-một có tổng chi phí tối ưu; các cặp không đạt ngưỡng bị từ chối, track còn lại có thể chuyển sang Lost và detection chưa ghép có thể tạo track mới. Kết quả phụ thuộc detector, ngưỡng và mô hình chuyển động.
+
+### 1.3.3. Các thuật toán theo dõi: SORT, DeepSORT, ByteTrack
+
+SORT kết hợp Kalman, IoU và Hungarian để liên kết track với detection; DeepSORT bổ sung đặc trưng ngoại hình nhằm hỗ trợ liên kết khi chuyển động/che khuất gây khó khăn; ByteTrack dùng detection confidence cao ở lượt liên kết chính và tận dụng detection confidence thấp ở lượt tiếp theo. Đây là mô tả cơ chế định tính, không phải kết quả benchmark trên dữ liệu của đồ án.
+
+**Bảng 1.1. So sánh định tính các thuật toán theo dõi**
 
 | Phương pháp | Cơ chế nổi bật | Điểm mạnh | Giới hạn liên quan |
 |---|---|---|---|
-| SORT | Kalman và gán theo IoU | Đơn giản, chi phí tính toán thấp | Dễ mất liên kết khi che khuất hoặc detection gián đoạn |
-| DeepSORT | SORT kết hợp đặc trưng ngoại hình | Có thêm tín hiệu nhận dạng khi đối tượng gần nhau | Cần trích đặc trưng và tăng chi phí tính toán |
-| ByteTrack | Hai lượt ghép, có dùng detection confidence thấp | Có thể duy trì track khi confidence suy giảm | Vẫn phụ thuộc chất lượng detector và ngưỡng association |
-| ByteTrack tự cài trong đồ án | Kalman xyah, association hai lượt, các tùy chọn mở rộng | Cho phép kiểm tra/tùy biến logic | Chưa có benchmark MOT ground truth để khẳng định cải thiện |
+| SORT | Kalman và gán theo IoU | Đơn giản, chi phí thấp | Dễ mất liên kết khi che khuất hoặc detection gián đoạn |
+| DeepSORT | SORT kết hợp đặc trưng ngoại hình | Có thêm tín hiệu nhận dạng khi đối tượng gần nhau | Cần trích đặc trưng, tăng chi phí tính toán |
+| ByteTrack | Hai lượt ghép, có dùng detection confidence thấp | Có thể duy trì track khi confidence suy giảm | Vẫn phụ thuộc detector và ngưỡng association |
+| ByteTrack tự cài trong đồ án | Kalman XYAH, association hai lượt, quản lý vòng đời track | Cho phép kiểm tra/tùy biến logic | Chưa có ground truth MOT để khẳng định cải thiện |
 
-Buffered IoU mở rộng hộp dự đoán trước khi tính IoU nhằm giảm độ nhạy với sai số vị trí; directional gating điều chỉnh association theo hướng chuyển động; NSA Kalman điều chỉnh nhiễu đo theo confidence. Đây là cơ chế được khảo sát trong code, chưa có số liệu ground truth để kết luận mức cải thiện.
+Dự án dùng ByteTrack của Ultralytics làm baseline và có triển khai tùy chọn riêng. Buffered IoU, directional gating, NSA Kalman, signal-aware lifecycle và stitching là các hướng thử nghiệm trong tracker tự cài; chúng không mặc định bật và chưa được chứng minh cải thiện bằng ground truth.
 
 **Hình 1.2. Hai giai đoạn liên kết detection của ByteTrack**
-*Nguồn: cần vẽ sơ đồ theo mô tả thuật toán trong tài liệu ByteTrack, phân biệt detection confidence cao và thấp.*
-
-**Hình 1.3. Minh họa IoU và Buffered IoU**
-*Nguồn: cần tạo hình minh họa hình học; không dùng làm kết quả thực nghiệm.*
-
-### 1.2.3. Kỹ thuật xử lý ảnh hỗ trợ
-
-Phép chiếu homography mô tả ánh xạ phối cảnh giữa hai mặt phẳng, có thể dùng để chuẩn hóa vùng mặt đường hoặc so sánh vị trí xe trong hệ tọa độ bird-eye view khi biết các điểm tương ứng. Trong phiên bản hiện tại, hệ thống chưa hiệu chuẩn camera và chưa dùng homography; vạch dừng, ROI và quỹ đạo đều được xét trực tiếp trên tọa độ pixel của ảnh. Vì vậy không suy ra khoảng cách hay tốc độ thực địa từ kết quả.
-
-ROI là vùng đa giác giới hạn phần ảnh được dùng cho một chức năng. ROI phương tiện giảm việc xét các vùng không thuộc làn cần theo dõi. ROI đèn tập trung suy luận vào cụm tín hiệu nhỏ. Tọa độ ROI được lưu ở độ phân giải video gốc và cần thiết lập riêng cho mỗi góc camera.
-
-HSV tách thành phần màu sắc khỏi thành phần độ sáng tương đối. Trong dự án, màu dự đoán của đèn được kiểm tra thêm qua các pixel có độ bão hòa và độ sáng đủ cao trong một patch quanh hộp dự đoán. Bước này là hiệu chỉnh heuristic, không thay thế mô hình và có thể không đáng tin khi ảnh mờ, cháy sáng hoặc vùng patch lẫn nền.
-
-Histogram màu HSV còn được dùng như một tín hiệu phụ trong bước nối track: so sánh histogram vùng đối tượng giữa track vừa mất và detection mới. Tín hiệu này không phải embedding nhận dạng, nhạy với ánh sáng và nền, nên chỉ kết hợp với khoảng cách hình học và thời gian.
-
-### 1.2.4. Các chỉ số đánh giá theo dõi
-
-IDF1 đo mức khớp danh tính giữa track dự đoán và ground truth; MOTA tổng hợp lỗi false negative, false positive và ID switch; IDSW đếm số lần danh tính dự đoán đổi trong quá trình theo dõi. HOTA cân bằng chất lượng phát hiện và association theo nhiều ngưỡng. Các chỉ số này cần annotation track theo frame và công cụ đánh giá tương ứng. Bộ dữ liệu hiện có chỉ có nhãn detection YOLO; báo cáo không tự suy diễn các chỉ số MOT.
-
-Ở cấp sự kiện, TP là sự kiện hệ thống phát hiện khớp với ground truth theo video, hướng xe và khoảng dung sai thời gian đã quy định; FP là sự kiện AI không có nhãn tương ứng; FN là sự kiện ground truth bị bỏ sót. Từ đó tính Precision = TP/(TP+FP), Recall = TP/(TP+FN) và F1 = 2×Precision×Recall/(Precision+Recall). Quy tắc ghép và dung sai phải được xác định trước khi đánh giá; các chỉ số này chưa được tính vì dự án chưa có ground truth sự kiện.
-
-### 1.2.5. Công cụ
-
-**Bảng 1.3. Công cụ sử dụng trong dự án**
-
-| Công cụ | Vai trò trong dự án |
-|---|---|
-| Python | Ngôn ngữ cài đặt pipeline và công cụ xử lý dữ liệu |
-| PyTorch | Nền tảng thực thi và huấn luyện mô hình |
-| Ultralytics | API YOLO, huấn luyện, validation và ByteTrack tích hợp |
-| OpenCV | Đọc/ghi video, tiền xử lý ảnh, ROI, HSV và vẽ kết quả |
-| NumPy, SciPy | Tính toán ma trận/vector và gán cặp Hungarian trong tracker tự cài |
-| Roboflow | Quản lý bộ dữ liệu, gán nhãn/xuất dữ liệu YOLO |
-| Flask, Waitress | Server giao diện web chạy cục bộ |
-
-## 1.3. Định hướng giải quyết
-
-### 1.3.1. Sơ đồ hướng tiếp cận
-
-Pipeline được tổ chức như sau:
 
 ```mermaid
 flowchart TD
-    V[Video] --> F[Đọc frame và resize/letterbox]
-    F --> D[YOLO phát hiện phương tiện]
-    D --> T[ByteTrack gán ID và duy trì quỹ đạo]
-    F --> L[Crop ROI đèn và YOLO nhận diện màu]
-    L --> H[Hiệu chỉnh HSV và ổn định trạng thái đèn]
-    T --> R[Lọc theo ROI xe và điểm đại diện]
-    R --> X[Kiểm tra quỹ đạo cắt đoạn vạch hữu hạn]
-    H --> E[Đối chiếu trạng thái tại frame giao cắt]
-    X --> E
-    E --> O[Video gắn nhãn, summary.json, violations.csv và ảnh bằng chứng]
+    D[Detection trong frame] --> S[Chia theo confidence]
+    S --> H[Nhóm confidence cao]
+    S --> L[Nhóm confidence thấp]
+    H --> A1[Ghép lượt một với track]
+    A1 --> U[Track chưa ghép]
+    U --> A2[Ghép lượt hai với detection confidence thấp]
+    A2 --> R[Giữ liên kết track nếu ghép được]
+    A2 --> X[Bỏ detection thấp chưa ghép]
+    H --> N[Tạo track mới từ detection cao phù hợp]
 ```
 
-Mô hình học sâu tạo phát hiện; bộ theo dõi duy trì ID; module hình học và trạng thái đèn đưa ra sự kiện ứng viên. Cách phân rã này cho phép xác định lỗi nằm ở khâu detector, cấu hình ROI, tracking hay luật giao cắt.
+*Sơ đồ khái quát hóa; chi tiết ngưỡng và xử lý track tuân theo cấu hình triển khai.*
 
-**Hình 1.4. Sơ đồ hướng tiếp cận detect → track → phân tích đèn → xét vi phạm**
-*Nguồn: tổng hợp theo pipeline của đồ án.*
+### 1.3.4. Phép chiếu homography
 
-### 1.3.2. Hướng cải tiến bộ theo dõi
+Homography là phép biến đổi phối cảnh giữa hai mặt phẳng, thường được biểu diễn bằng ma trận \(H\) xác định từ tối thiểu bốn cặp điểm tương ứng không thẳng hàng. Với điểm ảnh thuần nhất \(p=(x,y,1)^T\), điểm trên mặt phẳng đích tỷ lệ với \(Hp\), sau đó chuẩn hóa theo tọa độ thuần nhất. Có thể dùng phép biến đổi để biểu diễn mặt đường ở góc nhìn bird-eye view hoặc so sánh vị trí theo đơn vị mặt phẳng nếu đã hiệu chuẩn.
 
-Đồ án giữ ByteTrack Ultralytics làm baseline và có thêm một phiên bản ByteTrack tự cài. Các hướng khảo sát gồm chọn điểm đại diện bottom-center, Buffered IoU, directional gating, NSA Kalman, kéo dài vòng đời track theo tín hiệu đèn/vùng chờ và nối lại track gần vạch. Các cải tiến này là lựa chọn thử nghiệm, không mặc định được xem là tốt hơn; cần so sánh trên video cố định và có ground truth tracking.
+Trong đồ án, homography là kiến thức nền và hướng phát triển; code hiện tại xét vạch, ROI và quỹ đạo trực tiếp bằng pixel, chưa ước lượng ma trận H và chưa quy đổi sang mét. Vì vậy không báo cáo vận tốc/khoảng cách vật lý từ video.
 
-## 1.4. Các nghiên cứu liên quan, nhận xét và khoảng trống nghiên cứu
+## 1.4. Tổng quan về giám sát vi phạm giao thông
 
-Các hướng SORT, DeepSORT và ByteTrack lần lượt thể hiện cách ghép theo chuyển động, bổ sung đặc trưng ngoại hình và khai thác detection confidence thấp. Đồ án sử dụng ByteTrack làm baseline và xây dựng triển khai tùy chọn; không đề xuất detector hoặc thuật toán tracking nền mới.
+### 1.4.1. Quy định pháp luật về dừng xe khi đèn đỏ
 
-**Bảng 1.4. Đối chiếu phương pháp liên quan và phạm vi của đồ án**
+Hệ thống chỉ tạo sự kiện kỹ thuật để hỗ trợ rà soát. Việc xác định hành vi vi phạm, chủ thể và chế tài thuộc thẩm quyền của cơ quan/người có thẩm quyền. Các văn bản cần đối chiếu tại thời điểm nộp gồm Luật Trật tự, an toàn giao thông đường bộ số 36/2024/QH15 và Nghị định số 168/2024/NĐ-CP cùng văn bản sửa đổi, bổ sung hoặc thay thế nếu có.
 
-| Hướng/phương pháp | Cơ chế được kế thừa | Khác biệt trong đồ án | Hạn chế đánh giá hiện tại |
-|---|---|---|---|
-| SORT [3] | Kalman, IoU và Hungarian | Dùng làm nền tảng lý thuyết association | Không có bộ ground truth MOT |
-| ByteTrack [2] | Ghép detection confidence cao/thấp | Có baseline Ultralytics và bản tự cài | Chưa tính HOTA/IDF1/MOTA trên nhãn chuẩn |
-| Detector YOLO [1] | Phát hiện hộp và lớp | Fine-tune sáu lớp cho bối cảnh dự án | Chỉ có metric validation, chưa có metric test độc lập |
-| Pipeline đồ án | Kết hợp detector, tracker, đèn, ROI và luật vạch | Tạo sự kiện ứng viên có bằng chứng rà soát | ROI thủ công, chưa có ground truth sự kiện |
+**Bảng 1.2. Văn bản pháp luật cần đối chiếu khi hoàn thiện báo cáo**
 
-Điểm khác biệt của đồ án không nằm ở việc đề xuất một kiến trúc phát hiện mới. Trọng tâm là xây dựng bộ dữ liệu sáu lớp theo nhu cầu đề tài, kết hợp mô hình detector với tracker và quy tắc hình học, cung cấp cấu hình ROI theo camera và tạo đầu ra có thể rà soát. Các hạn chế về nhãn chuẩn cho video, hiệu chuẩn camera và đánh giá tracking được trình bày ở Chương 4.
+| Văn bản | Phạm vi liên quan | Nội dung cần xác minh |
+|---|---|---|
+| Luật số 36/2024/QH15 | Quy tắc chấp hành tín hiệu và vạch dừng | Điều, khoản áp dụng và hiệu lực tại ngày nộp |
+| Nghị định số 168/2024/NĐ-CP | Chế tài hành vi không chấp hành đèn tín hiệu | Điều khoản, đối tượng và mức phạt hiện hành |
+| Văn bản sửa đổi/thay thế (nếu có) | Tình trạng pháp lý hiện hành | Cần kiểm tra trên nguồn pháp luật chính thức |
+
+Không đưa mức phạt cụ thể vào báo cáo trước khi xác nhận điều khoản, đối tượng áp dụng và hiệu lực của văn bản. Kết quả AI không phải kết luận pháp lý.
+
+### 1.4.2. Vấn đề tồn tại trong giám sát hiện nay
+
+Giám sát video giao thông gặp các khó khăn về ánh sáng ngày/đêm, mưa và phản xạ, độ phân giải, góc nhìn, xe nhỏ hoặc bị che khuất, mật độ phương tiện, và sai số cấu hình ROI/vạch. Đèn tín hiệu thường chỉ chiếm ít pixel; màu có thể đổi do cháy sáng hoặc nền lẫn vào ROI. Tracker có thể mất track hoặc đổi ID khi detection gián đoạn, xe đi gần nhau hoặc bị che khuất.
+
+Một hộp xe nằm phía sau vạch trong một frame không cho biết xe vừa vượt vạch; cần theo dõi trạng thái trước–sau và xét đèn tại đúng thời điểm giao cắt. Camera rung, thay đổi góc hoặc vạch bị che có thể làm sai phép kiểm tra hình học. Các hệ thống hiện hành cũng cần xử lý quyền riêng tư, chất lượng bằng chứng và bước xác nhận của con người. Đây là các lý do hệ thống phải được đánh giá theo detector, tracking và sự kiện riêng biệt, với video/ground truth phù hợp.
+
+## 1.5. Giới thiệu về đề tài
+
+Đề tài xây dựng hệ thống phân tích video từ camera cố định, tập trung vào ô tô và vạch dừng tại khu vực tín hiệu giao thông. Mục tiêu là phát hiện phương tiện và màu đèn, theo dõi phương tiện qua thời gian, cấu hình ROI/vạch theo góc quay, rồi tạo sự kiện ứng viên khi track đi từ phía tiếp cận qua đoạn vạch trong thời gian trạng thái đèn là đỏ.
+
+Pipeline gồm đọc và tiền xử lý frame; YOLO phát hiện phương tiện và đèn trên ROI; ByteTrack gán ID; module trạng thái đèn làm ổn định dự đoán; luật hình học kiểm tra quỹ đạo cắt đoạn vạch; cuối cùng lưu video chú thích, `summary.json`, `violations.csv` và ảnh bằng chứng nếu có. Sơ đồ chi tiết module được trình bày ở Chương 2.
+
+```mermaid
+flowchart TD
+    V[Video camera cố định] --> F[Đọc frame và tiền xử lý]
+    F --> D[YOLO phát hiện phương tiện]
+    D --> T[Tracker gán ID và duy trì quỹ đạo]
+    F --> L[YOLO trên ROI đèn]
+    L --> S[Ổn định trạng thái đèn]
+    T --> G[Kiểm tra quỹ đạo qua đoạn vạch]
+    S --> E[Đối chiếu trạng thái tại thời điểm giao cắt]
+    G --> E
+    E --> O[Video chú thích và sự kiện ứng viên để rà soát]
+```
+
+**Hình 1.3. Hướng tiếp cận tổng quát của đề tài**
+*Nguồn: tổng hợp theo pipeline hiện thực.*
+
+Phạm vi hiện tại giới hạn ở video đã ghi từ camera cố định, các lớp `bus`, `car`, `truck`, `green`, `red`, `yellow`; ROI và vạch được thiết lập thủ công. Hệ thống chưa nhận dạng biển số, chưa hiệu chuẩn phối cảnh, chưa tính tốc độ thực địa, và không thay thế việc con người xác minh sự kiện. Số liệu validation của detector không đại diện cho độ chính xác sự kiện; hiện chưa có ground truth MOT/sự kiện để kết luận chất lượng tổng quát.
 
 ---
-
-# PHẦN 2 – CÁC KẾT QUẢ ĐẠT ĐƯỢC
-
-**Khối lượng dự kiến:** 35–50 trang theo đề cương của Khoa; đây là phần trọng tâm cần bổ sung hình, sơ đồ và phân tích theo nhận xét của giảng viên hướng dẫn.
-**Nhiệm vụ:** trình bày thiết kế, quy trình dữ liệu, huấn luyện, hiện thực, thực nghiệm và đóng góp của sinh viên.
 
 # CHƯƠNG 2. PHÂN TÍCH VÀ THIẾT KẾ
 
 ## 2.1. Phân tích yêu cầu
 
-### 2.1.1. Yêu cầu chức năng
+### 2.1.1. Mô tả bài toán và các khó khăn kỹ thuật
+
+Đầu vào là video từ camera cố định tại khu vực giao lộ có đèn tín hiệu và vạch dừng. Hệ thống cần phát hiện phương tiện và trạng thái đèn, duy trì ID qua các frame, rồi xác định liệu track có đi từ phía tiếp cận qua đoạn vạch trong thời gian đèn đỏ hay không. Một phát hiện đơn lẻ phía sau vạch không đủ để xác định hành vi, do đó quyết định phải dựa trên quỹ đạo, thời điểm giao cắt, hướng xe và trạng thái tín hiệu tương ứng.
+
+Các khó khăn chính gồm đèn nhỏ/khó nhìn, thay đổi ánh sáng, xe che khuất hoặc đi sát nhau, detector bỏ sót làm track mất/đổi ID, sai lệch ROI/vạch theo từng góc camera và việc phân biệt xe dừng chờ với xe đã đi qua vạch. Chất lượng còn phụ thuộc vào độ phân giải, góc quay và cấu hình thủ công; thiếu ground truth sự kiện khiến chưa thể định lượng độ chính xác cuối của hệ thống.
+
+### 2.1.2. Yêu cầu chức năng
 
 1. Nhận một video và đọc độ phân giải, FPS, số frame.
 2. Nạp checkpoint YOLO có các lớp phương tiện và màu đèn phù hợp.
@@ -385,7 +427,7 @@ flowchart LR
     V -. sự kiện cần xem lại .-> R
 ```
 
-### 2.1.2. Yêu cầu phi chức năng
+### 2.1.3. Yêu cầu phi chức năng
 
 - Cấu hình ROI phải đúng độ phân giải của video; không tái sử dụng ROI chỉ vì hai video có cùng kích thước.
 - Lỗi thiếu video, checkpoint, config hoặc không mở được đầu ra phải được thông báo.
@@ -408,9 +450,9 @@ flowchart LR
 | NF04 | Phi chức năng | Chạy CLI trên CPU; web hiện yêu cầu CUDA | Trung bình |
 | NF05 | Phi chức năng | Giới hạn video tải lên web ở 500 MB | Trung bình |
 
-### 2.2. Kiến trúc tổng thể và sơ đồ luồng xử lý
+### 2.2. Kiến trúc tổng thể
 
-#### 2.2.1. Sơ đồ kiến trúc tổng thể
+### 2.2.1. Sơ đồ kiến trúc hệ thống
 
 Hệ thống có ba lớp:
 
@@ -426,7 +468,7 @@ CLI khởi động pipeline qua `main.py` và `Code/06_run_detection.py`. Web ti
 
 *Nguồn: hình minh họa do sinh viên cung cấp, sắp xếp lại vào phụ lục hình của báo cáo.*
 
-#### 2.2.2. Lưu đồ luồng xử lý mỗi khung hình
+### 2.2.2. Lưu đồ xử lý mỗi khung hình
 
 Mỗi frame được đọc và tiền xử lý; nhánh phương tiện chạy detector và tracker, nhánh đèn phát hiện trạng thái trên ROI. Pipeline sau đó cập nhật quỹ đạo, kiểm tra điều kiện giao cắt, ghi lớp phủ và lưu bằng chứng khi có sự kiện.
 
@@ -457,16 +499,16 @@ flowchart TD
 
 ## 2.3. Thiết kế các module
 
-### 2.3.1. Thu nhận và tiền xử lý video
+### 2.3.1. Module thu nhận và tiền xử lý video
 
 OpenCV đọc lần lượt từng frame. Ảnh suy luận được resize giữ nguyên tỷ lệ và thêm viền letterbox về kích thước mục tiêu. Sau suy luận, tọa độ hộp phương tiện được ánh xạ từ ảnh đã letterbox về tọa độ video gốc để so sánh với ROI và vạch dừng. Mặc định pipeline không bật bước khử nhiễu NLM/sharpen.
 
-### 2.3.2. Phát hiện ô tô bằng YOLO
+### 2.3.2. Module phát hiện ô tô bằng YOLO
 
 Tên lớp lấy từ checkpoint và được gom thành nhóm xe và nhóm màu đèn. Phương tiện được phát hiện trên ảnh suy luận toàn khung hình. Mặc định các lớp xe được chuyển vào API `model.track` với ByteTrack YAML của Ultralytics; người dùng có thể chọn tracker này hoặc tracker tự cài qua CLI hay giao diện web. Với cấu hình web mặc định, `light_conf=0,25` và `vehicle_conf=0,6`; nếu không truyền `track_conf`, ngưỡng dự đoán của Ultralytics là giá trị nhỏ hơn giữa hai ngưỡng này. Tracker tự cài dùng `track_conf=0,1` mặc định để giữ detection điểm thấp cho lượt ghép thứ hai. `vehicle_conf` là ngưỡng xét quỹ đạo/sự kiện, không quyết định việc vẽ hộp: hộp track thuộc lớp xe có tâm trong ROI vẫn được vẽ khi confidence thấp hơn ngưỡng sự kiện. Bộ theo dõi tự cài giữ các trạng thái New/Tracked/Lost/Removed và dùng Kalman xyah cùng Hungarian trên chi phí IoU. Các tùy chọn cải tiến association được tắt mặc định: biou mở rộng hộp theo hệ số riêng cho hai giai đoạn ghép; directional gating cộng chi phí cho dịch chuyển đủ nhanh nhưng ngược hướng luồng xe; NSA Kalman nhân nhiễu đo \(R\) với \(1-\text{conf}\). Các cờ CLI `--biou`, `--dir-gating`, `--nsa-kalman` cho phép bật riêng từng cải tiến. Tùy chọn `--signal-lifecycle` nối thêm ngữ cảnh đèn và vùng hàng chờ để nới thời gian giữ một track Lost đang dừng khi đèn đỏ, cùng khoảng grace sau khi chuyển xanh. Tùy chọn `--stitch` so khớp vùng lân cận vạch, khoảng cách ground point và histogram HSV để tái sử dụng ID track vừa mất; mỗi lần nối được ghi ra log và ID đó tiếp tục được dùng ở bước khử trùng sự kiện.
 Suy luận phương tiện được thực hiện trên ảnh toàn khung hình, sau đó các hộp được ánh xạ về tọa độ ảnh gốc để áp dụng ROI. Confidence detector phục vụ việc tạo các phát hiện đầu vào; `vehicle_conf` được dùng ở bước quyết định có cập nhật quỹ đạo và xét sự kiện. Cơ chế này tách việc hiển thị hộp track trong ROI khỏi ngưỡng tạo sự kiện.
 
-### 2.3.3. Theo dõi đối tượng bằng bộ theo dõi tự cài
+### 2.3.3. Module theo dõi đối tượng (bộ theo dõi đề xuất)
 
 Module `tracker/` quản lý các track theo trạng thái New/Tracked/Lost/Removed, dự đoán bằng Kalman xyah và ghép bằng Hungarian trên chi phí IoU. Các tùy chọn association/lifecycle gồm Buffered IoU, directional gating, NSA Kalman, signal-aware lifecycle và stitching; chúng tắt mặc định. Mỗi tùy chọn có cờ CLI tương ứng, ngoại trừ preset chạy theo cấu hình A–F qua script ablation.
 
@@ -537,7 +579,7 @@ stateDiagram-v2
 
 Để chạy ablation nhất quán, CLI có sáu preset: A dùng Ultralytics; B dùng tracker tự cài; C thêm điểm tiếp đất `bottom_center`; D thêm biou và directional gating; E thêm signal lifecycle; F thêm stitch. NSA Kalman không nằm trong chuỗi preset và được giữ tắt để các mức so sánh tương ứng đúng các thay đổi đã nêu. `scripts/run_ablation.py` chạy sáu preset tuần tự trên cùng đầu vào bằng CPU, lưu MOT, sự kiện, log và FPS theo từng preset, đồng thời tạo file tổng hợp. Đây là công cụ ghi nhận kết quả chạy, không tự động chứng minh preset nào chính xác hơn; đánh giá chất lượng cần video có ground truth. Với cấu hình Test 6 hiện có, không khai báo `QUEUE_ZONE_POLYGON`, nên E/F cảnh báo và không thể thực hiện phần kéo dài tuổi track theo vùng hàng chờ; tính năng này đã được kiểm tra riêng bằng chuỗi giả.
 
-### 2.3.4. Nhận diện trạng thái đèn tín hiệu
+### 2.3.4. Module nhận diện trạng thái đèn tín hiệu
 
 Vùng bao của đa giác ROI đèn được cắt từ frame gốc, resize/letterbox riêng rồi đưa vào YOLO với ngưỡng `light_conf` mặc định 0,25. Hộp đèn được ánh xạ lại về tọa độ ảnh gốc và kiểm tra tâm hộp nằm trong ROI đa giác. Màu dự đoán được hiệu chỉnh bằng HSV ở patch quanh tâm đèn.
 
@@ -569,7 +611,7 @@ flowchart TD
 | Không có detection mới trong thời gian ngắn | Giữ trạng thái gần nhất | Trạng thái không đổi |
 | Không có detection mới quá 2 giây theo FPS video | Đánh dấu trạng thái hiện tại không xác định | `unknown` |
 
-### 2.3.5. Thiết lập vạch dừng, vùng quan tâm và hướng dòng xe
+### 2.3.5. Module thiết lập vạch dừng và vùng quan tâm
 
 File JSON chứa `FRAME_SIZE`, `VEHICLE_DETECT_ROI_POLYGON`, `RED_LIGHT_DETECT_ROI_POLYGON`, `STOP_LINE_COORDS`, `CROSSING_DIRECTION` và ngưỡng vượt vạch. Các trường tùy chọn gồm `GROUND_POINT_MODE`, `TRAFFIC_FLOW_DIRECTION`, `QUEUE_ZONE_POLYGON` và `STITCH_MARGIN`; giao diện web cho chọn `center` hoặc `bottom_center` ở bước thiết lập ROI, còn config cũ không có `GROUND_POINT_MODE` tiếp tục mặc định dùng `center`. Nếu không có hướng luồng xe, hệ thống suy ra vector đơn vị từ pháp tuyến vạch dừng và `CROSSING_DIRECTION`. `QUEUE_ZONE_POLYGON` là đa giác vùng xe dừng, được kiểm tra nằm trong ảnh; muốn bật vòng đời theo tín hiệu phải khai báo trường này. `STITCH_MARGIN` xác định dải pixel quanh đoạn vạch để xét nối, mặc định 40 pixel ảnh gốc. Bộ cấu hình có giao diện GUI chọn đa giác xe, đa giác đèn và hai điểm vạch. `load_config` kiểm tra cấu hình có đúng kích thước ảnh, các điểm nằm trong khung hình và chiều cắt thuộc `up` hoặc `down`.
 
@@ -582,7 +624,7 @@ Khi bật `stitch`, module lưu snapshot track Lost trong `stitch_window` frame.
 
 Vạch dừng được biểu diễn bởi hai đầu mút, tạo thành một đoạn hữu hạn. Quy ước hướng `up`/`down` phải được chọn theo góc nhìn camera, không suy ra chỉ từ hướng xe trên bản đồ.
 
-### 2.3.6. Phát hiện vi phạm
+### 2.3.6. Module phát hiện vi phạm
 
 Với vạch có điểm đầu \(A\), vector hướng \(v=B-A\), hệ thống tính pháp tuyến đơn vị \(n\). Điểm đại diện \(p_t\) được lấy từ tâm bbox hoặc tâm cạnh dưới theo `GROUND_POINT_MODE`; nếu trường cấu hình không có thì mặc định là `center`. Khoảng cách có dấu:
 
@@ -594,7 +636,7 @@ Một track được “armed” khi từng quan sát ở phía tiếp cận v�
 
 Sự kiện chỉ được tạo nếu trạng thái tại frame giao cắt được lưu là đỏ và ID chưa được ghi nhận trước đó. Cơ chế này hạn chế tính nhầm xe đã ở phía sau vạch từ đầu video và tránh ghi trùng một ID trong cùng lượt xử lý. Tuy nhiên, mất track, đổi ID, ROI không đúng hoặc trạng thái đèn `unknown` tại frame giao cắt đều có thể làm bỏ sót sự kiện.
 
-### 2.3.7. Lưu bằng chứng và dữ liệu đầu ra
+### 2.3.7. Module lưu bằng chứng và dữ liệu đầu ra
 
 **Bảng 2.3. Các tệp đầu ra của pipeline**
 
@@ -625,11 +667,9 @@ flowchart TD
 
 ## 2.4. Thiết kế thuật toán phát hiện vi phạm
 
-### 2.4.1. Điều kiện vi phạm
+### 2.4.1. Điều kiện vi phạm và điểm tham chiếu của xe
 
 Một sự kiện ứng viên chỉ được tạo khi có track hợp lệ đạt `vehicle_conf`, quỹ đạo đã được “armed” ở phía tiếp cận, quỹ đạo cắt qua đoạn vạch hữu hạn theo đúng hướng, vượt qua ngưỡng xác nhận và trạng thái đèn tại frame giao cắt là đỏ. Mỗi ID chỉ được ghi nhận một lần trong cùng lượt xử lý. Đây là quy tắc kỹ thuật của hệ thống, không phải kết luận pháp lý.
-
-### 2.4.2. Điểm tham chiếu của xe so với vạch
 
 Điểm kiểm tra được lấy từ tâm bbox (`center`) hoặc tâm cạnh dưới (`bottom_center`). Hai lựa chọn đều là xấp xỉ vị trí xe trên mặt đường; `bottom_center` không khẳng định chính xác vị trí bánh trước. Vạch là đoạn hữu hạn \(AB\); hệ thống tính pháp tuyến đơn vị \(n\), sau đó dùng khoảng cách có dấu:
 
@@ -642,7 +682,8 @@ d_t=(p_t-A)\cdot n.
 
 *Nguồn: hình minh họa do sinh viên cung cấp. Hình giải thích quy ước hình học, không phải ảnh CCTV hay kết quả thực nghiệm.*
 
-### 2.4.3. Phân biệt xe chờ, xe vượt vạch và xe đã ở trong giao lộ
+
+### 2.4.2. Phân biệt xe chờ, xe vượt vạch, xe trong giao lộ
 
 Track chỉ được “armed” sau khi quan sát ở phía tiếp cận vạch đủ ngưỡng. Khi điểm tham chiếu đổi dấu, giao điểm được nội suy và kiểm tra có nằm trên đoạn hữu hạn \(AB\) hay không; track chỉ được xác nhận sau khi đi qua ngưỡng phía bên kia. Xe xuất hiện ngay từ đầu video ở phía sau vạch không tự động bị tính là vừa vượt vạch.
 
@@ -672,7 +713,7 @@ flowchart TD
 
 Xe đã ở phía sau vạch ngay từ đầu không được armed; giao cắt ngoài đoạn hữu hạn \(AB\) không được tính. `threshold` là ngưỡng cấu hình của `LineCrossing` (mặc định 20 pixel trong CLI).
 
-### 2.4.4. Xử lý che khuất, mất ID và ID switch
+### 2.4.3. Xử lý che khuất, mất ID và tránh báo trùng
 
 Tracker tự cài duy trì track Lost trong giới hạn `track_buffer`; khi bật `signal_lifecycle`, track Lost có điểm cuối trong `QUEUE_ZONE_POLYGON`, tốc độ thấp và bối cảnh đèn phù hợp có thể được giữ lâu hơn. Directional gating phạt ghép cặp ngược hướng, BIoU mở rộng hộp ở các giai đoạn association, NSA Kalman điều chỉnh nhiễu đo theo confidence. Các cơ chế này giảm rủi ro trong một số tình huống nhưng chưa được đánh giá trên nhãn ID chuẩn.
 
@@ -720,11 +761,9 @@ flowchart TD
     R --> E([Tiếp tục tracking])
 ```
 
-### 2.4.5. Cơ chế tránh báo trùng
+**Tránh báo trùng.** Tập `captured` ngăn cùng một `track_id` tạo nhiều sự kiện trong một lượt phân tích. Nếu tracker đổi ID sau che khuất, cơ chế này không bảo đảm nhận ra đó là cùng một phương tiện; stitching có thể giúp kế thừa ID trong các trường hợp đạt ngưỡng nhưng cũng có khả năng nối sai. Vì vậy đầu ra cần được người vận hành rà soát.
 
-Tập `captured` ngăn cùng một `track_id` tạo nhiều sự kiện trong một lượt phân tích. Nếu tracker đổi ID sau che khuất, cơ chế này không bảo đảm nhận ra đó là cùng một phương tiện; stitching có thể giúp kế thừa ID trong các trường hợp đạt ngưỡng nhưng cũng có khả năng nối sai. Vì vậy đầu ra cần được người vận hành rà soát.
-
-### 2.4.6. Bảng tham số và cách chọn tham số
+### 2.4.4. Bảng tham số và cách chọn tham số
 
 Các giá trị dưới đây là giá trị mặc định trong `TrackerConfig`, không phải giá trị tối ưu hóa từ validation. Chưa có quy trình quét tham số trên tập validation có ground truth; khoảng quét do đó chưa được xác định.
 
@@ -757,9 +796,13 @@ Các giá trị dưới đây là giá trị mặc định trong `TrackerConfig`
 | E | Tự cài | `bottom_center` | Bật | Bật | Tắt | Tắt |
 | F | Tự cài | `bottom_center` | Bật | Bật | Bật | Tắt |
 
-## 2.5. Thiết kế giao diện và lưu trữ dữ liệu
+## 2.5. Thiết kế dữ liệu và giao diện
 
-### 2.5.1. Giao diện web/CLI
+### 2.5.1. Cấu trúc dữ liệu đầu vào, đầu ra
+
+Đầu vào gồm video, checkpoint YOLO và cấu hình JSON theo đúng độ phân giải video (ROI phương tiện, ROI đèn, hai đầu vạch và hướng cắt). Đầu ra chính gồm video đã chú thích, `tracks.txt` lưu hộp và ID theo frame ở dạng MOT, `summary.json` lưu thông số lượt chạy và sự kiện, `violations.csv` lưu sự kiện AI, cùng ảnh crop/toàn cảnh khi có sự kiện. Tên file, định dạng và trường dữ liệu được tổng hợp tại Bảng 2.3; mỗi phiên web có thư mục job riêng. Đây là đầu ra hỗ trợ rà soát, không phải kết luận pháp lý.
+
+### 2.5.2. Thiết kế giao diện người dùng
 
 Ứng dụng VIA chạy cục bộ qua Flask/Waitress. Người dùng tải video, đánh dấu vùng xe/đèn và hai đầu vạch, rồi theo dõi tiến độ. Bốn mục cấu hình nâng cao — hướng phương tiện qua vạch, điểm đại diện, bộ theo dõi phương tiện và tinh chỉnh độ tin cậy — là bốn phần thu gọn độc lập, mặc định đóng; lựa chọn được lưu cùng job. Người dùng có thể chọn ByteTrack Ultralytics hoặc ByteTrack tự cài. Worker riêng nhận cấu hình tracker, ngưỡng và ROI để chạy pipeline, cập nhật ảnh xem trước và trạng thái job. Các cải tiến ablation nâng cao của tracker tự cài hiện chỉ cấu hình qua CLI. Video đầu ra được mã hóa H.264 để phát trên trình duyệt. Mỗi job có thư mục riêng trong `.webdata/jobs/`, tránh ghi đè kết quả CLI trong `Output/`.
 
@@ -768,9 +811,6 @@ Giao diện có trang rà soát sự kiện AI để đánh dấu xác nhận, k
 **Hình 2.13. Ảnh chụp giao diện cấu hình ROI và các mục tùy chọn**
 *Cần chụp giao diện web hiện tại, thể hiện riêng bốn mục thu gọn; không có ảnh chụp giao diện trong thư mục tài liệu.*
 
-### 2.5.2. Cấu trúc tệp đầu ra
-
-Mô tả tên file, định dạng và các trường/cột được tổng hợp tại Bảng 2.3. `tracks.txt` lưu hộp và ID theo frame ở dạng MOT; `summary.json` lưu thông số lượt chạy và sự kiện; `violations.csv` lưu sự kiện AI; ảnh crop/toàn cảnh được tạo khi có sự kiện.
 
 ### 2.5.3. Sơ đồ tuần tự luồng chính
 
@@ -809,11 +849,9 @@ sequenceDiagram
 
 # CHƯƠNG 3. XÂY DỰNG HỆ THỐNG
 
-**Nhiệm vụ:** trình bày công cụ, dữ liệu, huấn luyện mô hình, cài đặt tích hợp, kiểm thử và phần việc do sinh viên thực hiện.
-
 ## 3.1. Công cụ và công nghệ sử dụng
 
-Các công nghệ được lựa chọn theo vai trò trong sản phẩm. YOLO/PyTorch phục vụ huấn luyện và phát hiện; OpenCV xử lý video, ROI và ảnh; NumPy/SciPy hỗ trợ hình học và ghép cặp trong tracker tự cài; Flask/Waitress cung cấp giao diện web cục bộ. Ultralytics cung cấp API YOLO và ByteTrack baseline. Bảng 1.3 nêu công cụ và chức năng nền tảng; Bảng 3.12 trình bày cấu trúc mã nguồn tích hợp.
+Các công nghệ được lựa chọn theo vai trò trong sản phẩm. YOLO/PyTorch phục vụ huấn luyện và phát hiện; OpenCV xử lý video, ROI và ảnh; NumPy/SciPy hỗ trợ hình học và ghép cặp trong tracker tự cài; Flask/Waitress cung cấp giao diện web cục bộ. Ultralytics cung cấp API YOLO và ByteTrack baseline. Bảng 3.12 trình bày cấu trúc mã nguồn tích hợp.
 
 | Công nghệ | Vai trò triển khai |
 |---|---|
@@ -828,7 +866,7 @@ Các công nghệ được lựa chọn theo vai trò trong sản phẩm. YOLO/P
 
 ## 3.2. Xây dựng bộ dữ liệu
 
-### 3.2.1. Nguồn dữ liệu
+### 3.2.1. Nguồn dữ liệu và chuẩn bị dữ liệu
 
 Ảnh do sinh viên tự tìm kiếm và thu thập từ camera CCTV giao thông và các luồng CCTV công khai trên YouTube. Sinh viên tự gán nhãn bằng Roboflow hơn 2.000 ảnh trong project `NhanDienGiaoThong`; ngoài ra, sinh viên sử dụng dataset `KLTN-vehicles` lấy từ Roboflow. Sau khi chuẩn hóa nhãn và loại lớp xe máy không thuộc phạm vi đề tài, hai nguồn được ghép thành bộ dữ liệu phương tiện ban đầu. Vì số mẫu bus và truck trong bộ ban đầu còn ít, sinh viên bổ sung riêng các dataset Bus và Truck. Tiếp đó, khoảng một nửa dữ liệu từ project Traffic Light Detection được đưa vào bộ sáu lớp, rồi bộ ghép được làm sạch. Workspace hiện không lưu đủ metadata về số clip gốc, độ phân giải/FPS của từng nguồn hay điều kiện thời tiết/ánh sáng; không suy ra các trường này từ số ảnh.
 
@@ -845,7 +883,7 @@ Các công nghệ được lựa chọn theo vai trò trong sản phẩm. YOLO/P
 
 Các số này là ảnh chụp số lượng từng project tại thời điểm ghi nhận; không cộng các nguồn thành tổng dataset vì `DATADOANNEW` là project đích sau tổng hợp, không phải nguồn độc lập. Riêng nguồn Traffic Light có số liệu không nhất quán: ảnh chụp Roboflow ghi 9.710 ảnh, README trong thư mục dữ liệu cục bộ ghi 1.176 ảnh, trong khi đếm các split train/valid/test của chính thư mục đó được 10.886 ảnh và 10.886 nhãn. Script ghép hiện trỏ tới thư mục cục bộ này. Vì vậy, 9.710 là số trên ảnh chụp, không dùng làm mẫu số để suy ra số file đã lấy; kết quả lấy mẫu thực tế được đối chiếu tại Mục 3.2.2. Chưa có manifest hoặc lịch sử phiên bản đủ để giải thích chênh lệch.
 
-Sau khi làm sạch, sinh viên tải bộ dữ liệu lên Roboflow để lưu trữ tại project `DATADOANNEW`; bản export dùng train được tải vào `[dataset export-yolo26 tr?n m?y hu?n luy?n]`.
+Sau khi làm sạch, sinh viên tải bộ dữ liệu lên Roboflow để lưu trữ tại project `DATADOANNEW`; bản export dùng train được tải vào `[b?n export-yolo26 tr?n m?y hu?n luy?n]`.
 
 **Hình 3.1. Ví dụ ảnh từ các góc camera/điều kiện thu thập**
 *Cần chọn ảnh CCTV được phép sử dụng, làm mờ biển số và thông tin nhận dạng trước khi đưa vào báo cáo.*
@@ -860,7 +898,7 @@ Sau khi làm sạch, sinh viên tải bộ dữ liệu lên Roboflow để lưu 
 | Độ phân giải/FPS từng nguồn | Chưa thống kê |
 | Điều kiện thời tiết, thời gian, góc camera | Chưa lập bảng tổng hợp |
 
-### 3.2.2. Tiền xử lý dữ liệu
+### 3.2.2. Tiền xử lý và gán nhãn
 
 Luồng dưới đây phân biệt bước gộp ban đầu được mô tả từ quy trình của sinh viên với các bước có script trong workspace. Nhánh augmentation ngoại tuyến là một công cụ riêng; không được nhầm với dữ liệu export đã dùng trong lần train được báo cáo.
 
@@ -885,7 +923,7 @@ flowchart TD
 
 #### Chuẩn hóa thứ tự lớp trong bộ dữ liệu gộp
 
-Trong `[dataset Final_cleaned tr?n m?y hu?n luy?n]\data.yaml`, thứ tự lớp trên máy là:
+Trong `[b? d? li?u Final_cleaned tr?n m?y]\data.yaml`, thứ tự lớp trên máy là:
 
 **Bảng 3.3. Thứ tự lớp trong YAML gộp và làm sạch**
 
@@ -970,7 +1008,7 @@ Lớp `car` chiếm khoảng 51–53% bbox trong mỗi split; lớp `yellow` ít
 
 *Nguồn: `dataset/Final_cleaned/class_distribution.csv`; biểu đồ thể hiện số bbox, không phải số ảnh hay độ chính xác của mô hình.*
 
-### 3.2.3. Gán nhãn dữ liệu
+#### Gán nhãn dữ liệu
 
 Sinh viên tự gán nhãn bằng Roboflow hơn 2.000 ảnh trong project `NhanDienGiaoThong`. Project `KLTN-vehicles` và các nguồn Bus, Truck, Traffic Light Detection được dùng theo nhãn có sẵn sau khi loại lớp ngoài phạm vi và chuẩn hóa class mapping theo tên. Bộ lớp thống nhất sau cùng gồm `bus`, `car`, `truck`, `green`, `red`, `yellow`. Nhãn detection YOLO mô tả class và bounding box; dữ liệu hiện có không chứa nhãn ID liên tục kiểu MOT hoặc nhãn frame vi phạm để đánh giá sự kiện.
 
@@ -990,34 +1028,9 @@ Sinh viên tự gán nhãn bằng Roboflow hơn 2.000 ảnh trong project `NhanD
 
 Không có hồ sơ về việc hai người gán độc lập, đo IoU giữa người gán hoặc quy trình phân xử bất đồng. Vì vậy không báo cáo độ đồng thuận gán nhãn; kiểm tra clean xác nhận cú pháp/tọa độ, không chứng minh tính đúng đắn ngữ nghĩa.
 
-### 3.2.4. Chia tập dữ liệu
+#### Định dạng và lưu trữ dữ liệu
 
-Các split Train/Valid/Test được giữ riêng trong các bước ghép dữ liệu; script lấy mẫu đèn xử lý từng split riêng, không chuyển ảnh qua lại. Tỷ lệ ảnh clean xấp xỉ 70%/20%/10%. Chưa xác minh được toàn bộ nguồn được chia theo clip/giao lộ, vì vậy không khẳng định độc lập theo camera hoặc không rò rỉ cảnh giữa các split.
-
-Thống kê số ảnh và bbox từng split trình bày tại Bảng 3.4.
-
-### 3.2.5. Tăng cường dữ liệu
-
-Workspace có script `Code/04_preprocessing.py` để tạo bản ngoại tuyến `dataset/Final_preprocessed`, nhưng thư mục đầu ra này hiện chưa tồn tại và `args.yaml` của lần train trỏ tới export Roboflow `export-yolo26`; vì vậy không có bằng chứng script ngoại tuyến được dùng để tạo dữ liệu của lần train. Script dự kiến giữ nguyên validation/test và tạo tối đa năm biến thể cho mỗi ảnh train có ít nhất một lớp thuộc `{bus, truck, green, red, yellow}`: lật ngang với xác suất 0,5, xoay trong khoảng \(-15^\circ\) đến \(15^\circ\) với xác suất 0,7, rồi điều chỉnh độ sáng/tương phản. Bounding box được biến đổi theo ảnh và cắt về biên; cả các nhãn trong ảnh đủ điều kiện đều được giữ/biến đổi, kể cả `car` nếu ảnh đó có nhiều lớp. Seed ngoại tuyến là 42. Đây là mô tả khả năng của script, không phải số mẫu đã thực sự sinh.
-
-README của export `DATADOANNEW` ghi auto-orientation và resize 640×640 kiểu Stretch, không áp dụng augmentation ngoại tuyến. Trong lần train, tăng cường trực tuyến do Ultralytics thực hiện theo `args.yaml`, gồm HSV, lật ngang, scale/translate và mosaic; mosaic có giá trị 1,0 và đóng ở 10 epoch cuối. Không diễn giải `mosaic=1,0` thành tỷ lệ ảnh cuối cùng đã tăng cường. Cần phân biệt resize Stretch trong dữ liệu train với letterbox/crop ROI dùng ở pipeline suy luận.
-
-**Bảng 3.7. Các tham số tăng cường chính trong hồ sơ huấn luyện**
-
-| Tham số | Giá trị |
-|---|---:|
-| HSV hue / saturation / value | 0,015 / 0,7 / 0,4 |
-| Translate / scale | 0,1 / 0,5 |
-| Horizontal flip (`fliplr`) | 0,5 |
-| Mosaic | 1,0; đóng mosaic 10 epoch cuối |
-| MixUp / CutMix | 0 / 0 |
-
-**Hình 3.4. Minh họa tiền xử lý ảnh trong export train và pipeline suy luận**
-*Cần bổ sung ảnh minh họa có nguồn: resize Stretch 640×640 theo README export; letterbox/crop ROI theo pipeline suy luận. Hai thao tác thuộc hai giai đoạn khác nhau, không dùng ảnh sơ đồ thay cho ảnh thực nghiệm.*
-
-### 3.2.6. Định dạng và lưu trữ dữ liệu
-
-Nhãn lưu theo định dạng YOLO detection gồm `class_id x_center y_center width height`, với tọa độ chuẩn hóa theo kích thước ảnh. Dữ liệu clean trên máy được lưu tại `[dataset Final_cleaned tr?n m?y hu?n luy?n]`; bản export train ở `[dataset export-yolo26 tr?n m?y hu?n luy?n]`.
+Nhãn lưu theo định dạng YOLO detection gồm `class_id x_center y_center width height`, với tọa độ chuẩn hóa theo kích thước ảnh. Dữ liệu clean trên máy được lưu tại `[b? d? li?u Final_cleaned tr?n m?y]`; bản export train ở `[b?n export-yolo26 tr?n m?y hu?n luy?n]`.
 
 Sau khi clean, dữ liệu được tải lên project Roboflow `DATADOANNEW` làm bản lưu/trung gian. README của bản export ghi định dạng YOLO26, 11.668 ảnh, auto-orientation, resize 640×640 kiểu Stretch và không augmentation. YAML export ghi:
 
@@ -1049,9 +1062,34 @@ ID số của một lớp có thể khác giữa hai phiên bản mà không là
 
 README của bản export `DATADOANNEW` ghi 11.668 ảnh; CSV clean ghi 11.672 cặp ảnh–nhãn (8.166 train, 2.335 valid và 1.171 test). Theo xác nhận của sinh viên, bốn cặp bị lỗi khi upload lên Roboflow. Số lượng export khớp với số clean sau khi trừ bốn cặp, nhưng chưa có log/tên file upload lỗi để đối chiếu định danh từng cặp.
 
+### 3.2.3. Chia tập dữ liệu
+
+Các split Train/Valid/Test được giữ riêng trong các bước ghép dữ liệu; script lấy mẫu đèn xử lý từng split riêng, không chuyển ảnh qua lại. Tỷ lệ ảnh clean xấp xỉ 70%/20%/10%. Chưa xác minh được toàn bộ nguồn được chia theo clip/giao lộ, vì vậy không khẳng định độc lập theo camera hoặc không rò rỉ cảnh giữa các split.
+
+Thống kê số ảnh và bbox từng split trình bày tại Bảng 3.4.
+
+### 3.2.4. Tăng cường dữ liệu
+
+Workspace có script `Code/04_preprocessing.py` để tạo bản ngoại tuyến `dataset/Final_preprocessed`, nhưng thư mục đầu ra này hiện chưa tồn tại và `args.yaml` của lần train trỏ tới export Roboflow `export-yolo26`; vì vậy không có bằng chứng script ngoại tuyến được dùng để tạo dữ liệu của lần train. Script dự kiến giữ nguyên validation/test và tạo tối đa năm biến thể cho mỗi ảnh train có ít nhất một lớp thuộc `{bus, truck, green, red, yellow}`: lật ngang với xác suất 0,5, xoay trong khoảng \(-15^\circ\) đến \(15^\circ\) với xác suất 0,7, rồi điều chỉnh độ sáng/tương phản. Bounding box được biến đổi theo ảnh và cắt về biên; cả các nhãn trong ảnh đủ điều kiện đều được giữ/biến đổi, kể cả `car` nếu ảnh đó có nhiều lớp. Seed ngoại tuyến là 42. Đây là mô tả khả năng của script, không phải số mẫu đã thực sự sinh.
+
+README của export `DATADOANNEW` ghi auto-orientation và resize 640×640 kiểu Stretch, không áp dụng augmentation ngoại tuyến. Trong lần train, tăng cường trực tuyến do Ultralytics thực hiện theo `args.yaml`, gồm HSV, lật ngang, scale/translate và mosaic; mosaic có giá trị 1,0 và đóng ở 10 epoch cuối. Không diễn giải `mosaic=1,0` thành tỷ lệ ảnh cuối cùng đã tăng cường. Cần phân biệt resize Stretch trong dữ liệu train với letterbox/crop ROI dùng ở pipeline suy luận.
+
+**Bảng 3.7. Các tham số tăng cường chính trong hồ sơ huấn luyện**
+
+| Tham số | Giá trị |
+|---|---:|
+| HSV hue / saturation / value | 0,015 / 0,7 / 0,4 |
+| Translate / scale | 0,1 / 0,5 |
+| Horizontal flip (`fliplr`) | 0,5 |
+| Mosaic | 1,0; đóng mosaic 10 epoch cuối |
+| MixUp / CutMix | 0 / 0 |
+
+**Hình 3.4. Minh họa tiền xử lý ảnh trong export train và pipeline suy luận**
+*Cần bổ sung ảnh minh họa có nguồn: resize Stretch 640×640 theo README export; letterbox/crop ROI theo pipeline suy luận. Hai thao tác thuộc hai giai đoạn khác nhau, không dùng ảnh sơ đồ thay cho ảnh thực nghiệm.*
+
 ## 3.3. Huấn luyện mô hình phát hiện
 
-Lần huấn luyện được đối chiếu trong báo cáo sử dụng dataset export YOLO26 từ Roboflow, với sáu lớp theo đúng thứ tự trong YAML export ở Mục 3.2.6.
+Lần huấn luyện được đối chiếu trong báo cáo sử dụng dataset export YOLO26 từ Roboflow, với sáu lớp theo đúng thứ tự trong YAML export ở Mục 3.2.2.
 
 ### 3.3.1. Môi trường phần cứng và phần mềm
 
@@ -1092,7 +1130,7 @@ Hồ sơ `args.yaml` ghi training script dùng `export-yolo26/data.yaml`, với 
 
 Script `train.py` kiểm tra đúng class order trước khi train và thiết lập trọng số dương cho BCE theo lớp: bus 1,000; car 0,458; green 1,106; red 1,079; truck 0,881; yellow 1,476. Đây là trọng số loss, không phải hệ số confidence lúc suy luận. Việc sử dụng chúng trong báo cáo được mô tả theo mã train; nếu nộp bản cuối, nên kèm log train thể hiện dòng `[Custom BCE] pos_weight` để xác nhận đoạn monkeypatch đã được gọi trong lần chạy tạo checkpoint.
 
-### 3.3.3. Kết quả validation
+### 3.3.3. Kết quả huấn luyện và validation
 
 Từ `results.csv`, có 70 dòng kết quả tương ứng 70 epoch. Epoch 70 có mAP50–95 cao nhất trong file:
 
@@ -1144,7 +1182,7 @@ Các tệp chính:
 | `web/` | HTML, CSS, JavaScript cho ứng dụng VIA |
 | `config/roi_config.json` | ROI của video mẫu trên máy |
 | `models/best.pt` | Checkpoint dùng mặc định trong project |
-| `[dataset Final_cleaned tr?n m?y hu?n luy?n]\` | Dataset clean trên máy và báo cáo thống kê |
+| `[b? d? li?u Final_cleaned tr?n m?y]\` | Dataset clean trên máy và báo cáo thống kê |
 
 ### 3.4.2. Cài đặt các module chính
 
@@ -1152,30 +1190,8 @@ Các module được phân vai trong Bảng 3.12. Pipeline inference dùng chung
 
 CLI mặc định dùng `models/best.pt`, CPU, ByteTrack Ultralytics và `config/roi_config.json`; có thể chọn tracker tự cài bằng `--tracker bytetrack`. Giao diện web dùng `models/best.pt`, GPU CUDA 0 và mặc định là ByteTrack Ultralytics; có thể đổi tracker trong phần cấu hình riêng của job. Các tham số CLI gồm `--weights`, `--video`, `--config`, `--device`, `--imgsz`, `--light-conf`, `--vehicle-conf` và `--track-conf`. Nếu không chỉ định `--track-conf`, Ultralytics dùng giá trị nhỏ hơn giữa `light_conf` và `vehicle_conf`, còn tracker tự cài dùng 0,1. Ngưỡng `vehicle_conf` lọc bước xét quỹ đạo/sự kiện, không ẩn hộp track hợp lệ trong ROI.
 
-### 3.4.3. Giao diện hệ thống
 
-Giao diện web có luồng tải video, cấu hình ROI/vạch, lựa chọn các mục tùy chọn, tiến độ xử lý, xem đầu ra và rà soát sự kiện. CLI cho phép chạy pipeline theo tham số dòng lệnh và công cụ ROI riêng. Ảnh chụp giao diện cần bổ sung tại Hình 2.13.
-
-## 3.5. Kiểm thử phần mềm
-
-### 3.5.1. Kiểm thử đơn vị và kiểm thử chức năng
-
-Trong mã nguồn có các kiểm thử đơn vị cho parser/cấu hình, detector, association, lifecycle, geometry, stitching, preset, API web, worker và các mục giao diện. Không có báo cáo tổng hợp kết quả chạy test được lưu cùng lần audit này; số lượng test pass phải được chạy lại trên môi trường chuẩn trước khi đưa vào báo cáo.
-
-**Bảng 3.13. Phạm vi kiểm thử phần mềm**
-
-| Nhóm | Nội dung kiểm thử | Kết quả cần ghi khi chạy lại |
-|---|---|---|
-| Pipeline detection | Lọc ROI/confidence, giao cắt, đầu ra | Cần chạy test suite |
-| Tracker tự cài | Association, Kalman, lifecycle, stitching, preset | Cần chạy test suite |
-| Web/API/worker | Lưu cấu hình, truyền tracker, tiến độ và job | Cần chạy test suite |
-| UI | Bốn mục thu gọn độc lập và lựa chọn tracker | Cần chạy test suite |
-
-### 3.5.2. Kiểm tra tính đúng đắn của bộ theo dõi
-
-Phép kiểm tra baseline đã lưu trước đây báo cáo hai chế độ cho kết quả ghép ID/hộp tương đương trên một lần chạy Test 6 với confidence được cố định. Đây là kiểm tra tương đương giữa các triển khai, không phải xác nhận ID đúng theo ground truth. Chi tiết và hạn chế được nêu ở Mục 4.2.1.
-
-## 3.6. Đóng góp của sinh viên
+**Phần việc tự thực hiện và nội dung kế thừa.**
 
 Phần sinh viên trực tiếp thực hiện theo thông tin và hiện vật của dự án:
 
@@ -1203,10 +1219,32 @@ Phần kế thừa gồm kiến trúc và trọng số khởi tạo YOLO, API YO
 
 ---
 
+### 3.4.3. Giao diện hệ thống
+
+Giao diện web có luồng tải video, cấu hình ROI/vạch, lựa chọn các mục tùy chọn, tiến độ xử lý, xem đầu ra và rà soát sự kiện. CLI cho phép chạy pipeline theo tham số dòng lệnh và công cụ ROI riêng. Ảnh chụp giao diện cần bổ sung tại Hình 2.13.
+
+
+
+## 3.5. Kiểm thử phần mềm
+
+### 3.5.1. Kiểm thử đơn vị và kiểm thử chức năng
+
+Trong mã nguồn có các kiểm thử đơn vị cho parser/cấu hình, detector, association, lifecycle, geometry, stitching, preset, API web, worker và các mục giao diện. Không có báo cáo tổng hợp kết quả chạy test được lưu cùng lần audit này; số lượng test pass phải được chạy lại trên môi trường chuẩn trước khi đưa vào báo cáo.
+
+**Bảng 3.13. Phạm vi kiểm thử phần mềm**
+
+| Nhóm | Nội dung kiểm thử | Kết quả cần ghi khi chạy lại |
+|---|---|---|
+| Pipeline detection | Lọc ROI/confidence, giao cắt, đầu ra | Cần chạy test suite |
+| Tracker tự cài | Association, Kalman, lifecycle, stitching, preset | Cần chạy test suite |
+| Web/API/worker | Lưu cấu hình, truyền tracker, tiến độ và job | Cần chạy test suite |
+| UI | Bốn mục thu gọn độc lập và lựa chọn tracker | Cần chạy test suite |
+
+### 3.5.2. Kiểm tra tính đúng đắn của bộ theo dõi
+
+Phép kiểm tra baseline đã lưu trước đây báo cáo hai chế độ cho kết quả ghép ID/hộp tương đương trên một lần chạy Test 6 với confidence được cố định. Đây là kiểm tra tương đương giữa các triển khai, không phải xác nhận ID đúng theo ground truth. Chi tiết và hạn chế được nêu ở Mục 4.2.1.
 
 # CHƯƠNG 4. THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ
-
-**Nhiệm vụ:** đánh giá detector, tracker và hệ thống theo video, nhãn chuẩn, tốc độ xử lý và các giới hạn đã xác định.
 
 ## 4.1. Thiết lập thực nghiệm
 
@@ -1229,7 +1267,7 @@ Hiện chưa có bộ ground truth cấp sự kiện hoặc tracking được l�
 
 **Tình trạng hiện tại:** các video trong Bảng 4.1 đều chưa có ground truth; nội dung trên là quy trình cần thực hiện, không phải kết quả đã đo.
 
-### 4.1.3. Các chỉ số đánh giá
+### 4.1.3. Các chỉ số đánh giá (phát hiện, theo dõi, cấp sự kiện)
 
 Detector có Precision, Recall, mAP50 và mAP50–95 trên validation như Bảng 3.11. Đánh giá tracking cần HOTA, IDF1, MOTA, IDSW và nhãn ID theo frame; đánh giá vi phạm cần phân loại sự kiện đúng, bỏ sót, báo giả và trùng. Các nhãn ground truth tương ứng chưa có trong dự án nên những chỉ số này chưa thể tính. FPS là tốc độ xử lý của từng lần chạy, không phải thước đo độ chính xác.
 
@@ -1275,11 +1313,13 @@ Kết quả không có sự kiện không chứng minh video không có vi phạ
 
 #### Lượt chạy Test 6 và khả năng tái lập
 
-Trong `.webdata/jobs/` có một job Test 6 hoàn tất ngày 03/11/2026, ghi đủ 1.771 frame, 19 track, ba sự kiện tại các frame 233, 316 và 1333, tốc độ 13,25 FPS. `summary.json` của job này trỏ đến checkpoint `[checkpoint c? tr?n m?y]`, hiện không còn; job không lưu hash checkpoint, backend tracker hay `track_conf` thực tế. Vì vậy đây chỉ là số liệu lịch sử, không được xem là lần chạy có thể tái lập bằng checkpoint hiện tại.
+Trong `.webdata/jobs/` có một job Test 6 hoàn tất ngày 03/11/2026, ghi đủ 1.771 frame, 19 track, ba sự kiện tại các frame 233, 316 và 1333, tốc độ 13,25 FPS. `summary.json` của job này trỏ đến checkpoint `[workspace d? ?n]\best.pt`, hiện không còn; job không lưu hash checkpoint, backend tracker hay `track_conf` thực tế. Vì vậy đây chỉ là số liệu lịch sử, không được xem là lần chạy có thể tái lập bằng checkpoint hiện tại.
 
 Một job web được lưu ngày 09/11/2026 dùng `models/best.pt`, ByteTrack Ultralytics, `track_conf=0,25`, xử lý 1.771/1.771 frame ở 10,95 FPS, ghi nhận 19 track và ba sự kiện tại các frame 227, 311, 1333. Đây là kết quả mô tả một lần chạy, không có ground truth để xác nhận sự kiện đúng hay sai. Các job Test 6 khác trong kho có kết quả khác (có job ghi 28 track hoặc bốn sự kiện) và dùng cấu hình ROI/ngưỡng khác nhau; không thể xem chênh lệch đó là bằng chứng cải thiện của model hay tracker.
 
 Trong các lần phân tích khác, ROI đèn thay đổi giữa các job; số frame `unknown` vì thế khác nhau đáng kể. Để đánh giá hợp lệ, phải cố định video, checkpoint, config ROI, confidence, thiết bị và phiên bản code. Không so sánh số sự kiện giữa các lần chạy nếu một trong các điều kiện này thay đổi.
+
+## 4.2. Đánh giá bộ theo dõi
 
 ### 4.2.1. So sánh các thuật toán theo dõi
 
@@ -1318,7 +1358,9 @@ Cấu hình thử không có `QUEUE_ZONE_POLYGON`; E/F phát cảnh báo và kh�
 **Hình 4.1. Biểu đồ cột so sánh A–F**
 *Chỉ vẽ sau khi có full run với video, config và thiết bị cố định; smoke 30 frame không nên trình bày như so sánh chất lượng.*
 
-### 4.3.1. Kết quả tổng thể cấp sự kiện vi phạm
+## 4.3. Đánh giá hệ thống ở cấp sự kiện vi phạm
+
+### 4.3.1. Kết quả tổng thể
 
 Các con số dưới đây là số sự kiện AI sinh ra, không phải số vi phạm đúng. Không có nhãn chuẩn để phân loại sự kiện đúng, bỏ sót, báo giả hoặc trùng.
 
@@ -1330,7 +1372,19 @@ Các con số dưới đây là số sự kiện AI sinh ra, không phải số 
 | Test 6 job web 09/11/2026 | 3 | Chưa xác minh | Chưa xác minh | Chưa xác minh |
 | Test 6 job lịch sử 03/11/2026 | 3 | Chưa xác minh | Chưa xác minh | Chưa xác minh |
 
-### 4.3.2. Kết quả theo từng điều kiện
+
+**Hình 4.3. Sự kiện điển hình: khung toàn cảnh và ảnh crop phương tiện**
+*Cần lấy từ job Test 6 đã chọn, kiểm tra lại frame/sự kiện và làm mờ biển số trước khi đưa vào báo cáo.*
+
+**Hình 4.4. Quỹ đạo một track qua vạch, có chú thích ID và trạng thái đèn**
+*Cần dựng từ `tracks.txt` và video đầu ra; chưa có hình quỹ đạo đã lưu.*
+
+**Hình 4.5. Ví dụ nối track đúng và tình huống nối nhầm (nếu có)**
+*Chưa có trường hợp nối thực tế thỏa ngưỡng trong video Test 6; không tạo hình minh họa như thể là kết quả đã quan sát.*
+
+Mã nguồn hiện không ghi tệp `stitches.csv`; thông tin nối track được ghi log khi có thao tác nối. Do đó chưa thể lập bảng nhật ký nối từ `stitches.csv` như đề cương gợi ý; cần bổ sung xuất log có cấu trúc nếu nội dung này là yêu cầu nghiệm thu.
+
+### 4.3.2. Kết quả theo từng điều kiện (ngày/đêm, mật độ xe, góc quay)
 
 Chưa có nhãn chuẩn và metadata đủ để phân nhóm kết quả theo ngày/đêm, mật độ xe hoặc góc quay. Không thể suy ra tỷ lệ đúng theo điều kiện chỉ từ số sự kiện do hệ thống sinh ra. Trước khi báo cáo mục này, cần gán nhãn ground truth, cố định checkpoint/ROI/ngưỡng và ghi điều kiện cho từng clip; nếu không có clip thuộc một nhóm thì ghi rõ “chưa có dữ liệu”, không ngoại suy.
 
@@ -1355,20 +1409,6 @@ Chưa có sweep tham số trên tập validation có ground truth. Các ngưỡn
 
 **Hình 4.2. Độ nhạy theo BIoU, max_age_red và ngưỡng stitch**
 *Chỉ bổ sung sau khi chạy sweep với validation có ground truth; hiện chưa có dữ liệu để vẽ.*
-
-### 4.3.4. Hình ảnh minh họa kết quả
-
-**Hình 4.3. Sự kiện điển hình: khung toàn cảnh và ảnh crop phương tiện**
-*Cần lấy từ job Test 6 đã chọn, kiểm tra lại frame/sự kiện và làm mờ biển số trước khi đưa vào báo cáo.*
-
-**Hình 4.4. Quỹ đạo một track qua vạch, có chú thích ID và trạng thái đèn**
-*Cần dựng từ `tracks.txt` và video đầu ra; chưa có hình quỹ đạo đã lưu.*
-
-**Hình 4.5. Ví dụ nối track đúng và tình huống nối nhầm (nếu có)**
-*Chưa có trường hợp nối thực tế thỏa ngưỡng trong video Test 6; không tạo hình minh họa như thể là kết quả đã quan sát.*
-
-Mã nguồn hiện không ghi tệp `stitches.csv`; thông tin nối track được ghi log khi có thao tác nối. Do đó chưa thể lập bảng nhật ký nối từ `stitches.csv` như đề cương gợi ý; cần bổ sung xuất log có cấu trúc nếu nội dung này là yêu cầu nghiệm thu.
-
 
 ## 4.4. Tốc độ xử lý và khả năng triển khai
 
@@ -1515,12 +1555,12 @@ Không chép toàn bộ source code vào nội dung chính; lựa chọn các đ
 
 ### A.2. Các đường dẫn quan trọng
 
-- Dữ liệu clean tại máy: `[dataset Final_cleaned tr?n m?y hu?n luy?n]\`
-- YAML clean tại máy: `[dataset Final_cleaned tr?n m?y hu?n luy?n]\data.yaml`
+- Dữ liệu clean tại máy: `[b? d? li?u Final_cleaned tr?n m?y]\`
+- YAML clean tại máy: `[b? d? li?u Final_cleaned tr?n m?y]\data.yaml`
 - Thư mục xử lý và script ghép/clean: `[th? m?c x? l? d? li?u c?c b?]\` (`01_merge_truck_bus_into_nhandien.py`, `02_merge_with_traffic_light.py`, `03_data_cleaning.py`)
 - Project Roboflow lưu dataset sau clean: `DATADOANNEW`
-- Dataset Roboflow export dùng train: `[dataset export-yolo26 tr?n m?y hu?n luy?n]\`
-- YAML train: `[dataset export-yolo26 tr?n m?y hu?n luy?n]\data.yaml`
+- Dataset Roboflow export dùng train: `[b?n export-yolo26 tr?n m?y hu?n luy?n]\`
+- YAML train: `[b?n export-yolo26 tr?n m?y hu?n luy?n]\data.yaml`
 - Hồ sơ train: `[th? m?c x? l? d? li?u c?c b?]\Train\runs\do_an_tn\args.yaml`
 - Kết quả theo epoch: `[th? m?c x? l? d? li?u c?c b?]\Train\runs\do_an_tn\results.csv`
 - Checkpoint train: `[th? m?c x? l? d? li?u c?c b?]\Train\runs\do_an_tn\weights\best.pt`
