@@ -54,11 +54,11 @@ Báo cáo trình bày quá trình xây dựng hệ thống phân tích video gia
 
 # TÓM TẮT
 
-Đồ án xây dựng một hệ thống phân tích video giao thông nhằm hỗ trợ phát hiện ô tô đi qua vạch dừng trong thời gian đèn tín hiệu đỏ. Hệ thống sử dụng mô hình YOLO đã được huấn luyện trên bộ dữ liệu sáu lớp gồm xe buýt, ô tô con, xe tải và ba trạng thái đèn giao thông. ByteTrack tích hợp trong Ultralytics là lựa chọn mặc định; cả CLI và giao diện web đều cho phép chọn thêm module ByteTrack tự cài. Các cờ association/lifecycle/stitching nâng cao và bộ preset ablation A–F chỉ cấu hình qua CLI, không tự bật khi phân tích trên web. Đèn tín hiệu được suy luận trên vùng ảnh quan tâm (ROI) đã cấu hình; kết quả màu được làm ổn định theo lịch sử ngắn. Bộ kiểm tra hình học dùng điểm đại diện của bbox (mặc định là tâm, có thể cấu hình thành tâm cạnh dưới), xác nhận giao cắt trên đoạn vạch hữu hạn và chỉ ghi nhận sự kiện nếu trạng thái đèn tại thời điểm giao cắt là đỏ.
+Đồ án xây dựng một hệ thống phân tích video giao thông nhằm hỗ trợ phát hiện ô tô đi qua vạch dừng trong thời gian đèn tín hiệu đỏ. Hệ thống sử dụng mô hình YOLO đã được huấn luyện trên bộ dữ liệu sáu lớp gồm xe buýt, ô tô con, xe tải và ba trạng thái đèn giao thông. Các lượt web được chọn làm kết quả chính (Test 6 Demo có ReID, Test 7 và Test 8) có metadata xác nhận dùng ByteTrack tự cài và appearance ReID; cấu hình vạch trong các lượt này dùng tâm bbox (`center`) làm điểm kiểm tra vượt vạch. Web hiện mặc định chọn tracker tự cài và bật ReID; CLI mặc định dùng ByteTrack Ultralytics nếu không chỉ định khác. Đèn tín hiệu được suy luận trên vùng ảnh quan tâm (ROI) đã cấu hình; kết quả màu được làm ổn định theo lịch sử ngắn. Bộ kiểm tra hình học xác nhận giao cắt trên đoạn vạch hữu hạn và chỉ ghi nhận sự kiện nếu trạng thái đèn tại thời điểm giao cắt là đỏ.
 
-Quy trình dữ liệu bắt đầu từ ảnh CCTV do sinh viên thu thập/gán nhãn và các nguồn Roboflow; các lớp phương tiện được chuẩn hóa, bổ sung Bus/Truck, rồi ghép với một mẫu dữ liệu đèn. CSV thống kê sau clean ghi nhận 11.672 cặp ảnh–nhãn và 31.509 bbox hợp lệ. Theo xác nhận của sinh viên, khi tải bộ clean lên Roboflow có bốn cặp ảnh–nhãn tải lên lỗi; bản export dùng trong lần train có 11.668 cặp. Thứ tự lớp trong YAML export khác YAML clean trên máy, vì vậy mã lớp được đối chiếu theo tên trước khi train. Mô hình được huấn luyện 70 epoch bằng YOLO26s với kích thước ảnh 640, batch 4 và optimizer AdamW. Ở epoch có mAP50–95 cao nhất trong `results.csv` (epoch 70), các chỉ số validation được ghi nhận là Precision 0,92017, Recall 0,84876, mAP50 0,91845 và mAP50–95 0,68871.
+Quy trình dữ liệu bắt đầu từ 2.078 ảnh CCTV do sinh viên tự thu thập, gán nhãn trên Roboflow, áp dụng lật ngang (flip H) để tăng dữ liệu và resize 640×640. Trong thư mục `NhanDienGiaoThong.v3i.yolo11`, có 732 ảnh thuộc các split train/valid/test có từ `flip` trong tên file (515 train, 148 valid, 69 test). Bộ này được ghép với 2.310 ảnh `KLTN-vehicles`, tạo project `NhanDienGiaoThong.3i.yolo11` có hơn 4.300 ảnh; sau đó bổ sung dữ liệu Bus, Truck và khoảng một nửa bộ Traffic Light Detection để tạo bộ sáu lớp, rồi clean thành `Final Cleaned`. CSV trong bản clean tham chiếu ghi 11.672 cặp ảnh–nhãn và 31.509 bbox hợp lệ; đây không phải phép kiểm kê độc lập trên dữ liệu train. Bộ clean được tải lên Roboflow `DATADOANNEW`; theo xác nhận của sinh viên, một số file lỗi trong quá trình tải lên nên phiên bản còn 11.668 ảnh. Đây là bộ được tải lại từ Roboflow vào `TRAIN_DATA_ROOT\Train` để train; các thư mục dataset trong repository ổ D chỉ là bản tham chiếu/minh họa, không phải đầu vào huấn luyện. Mô hình được huấn luyện 70 epoch bằng YOLO26s với kích thước ảnh 640, batch 4 và optimizer AdamW. Ở epoch có mAP50–95 cao nhất trong `results.csv` (epoch 70), các chỉ số validation được ghi nhận là Precision 0,92017, Recall 0,84876, mAP50 0,91845 và mAP50–95 0,68871.
 
-Trong lần chạy suy luận được lưu cho video mẫu 2568 × 1440, hệ thống xử lý đủ 950 khung hình với tốc độ trung bình 11,49 FPS trên GPU 0; ghi nhận 7 ID phương tiện và không ghi nhận sự kiện vi phạm. Kết quả này chỉ mô tả một lần chạy, chưa được đối chiếu với bộ nhãn chuẩn cho video nên không đại diện cho độ chính xác tổng quát. Hệ thống cung cấp giao diện dòng lệnh và giao diện web chạy cục bộ để cấu hình ROI, theo dõi tiến độ, xem video đầu ra và rà soát các sự kiện do AI đề xuất.
+Các job web đã lưu gồm Test 6 Demo che khuất, Test 7 và Test 8; mỗi lượt xử lý hết video, dùng tracker tự cài và tâm bbox. Người dùng đã xem đầu ra và đánh giá sơ bộ là khá ổn. Đây là kiểm tra trực quan trên các video cụ thể, không thay thế ground truth hoặc chứng minh độ chính xác tổng quát. Hệ thống cung cấp giao diện dòng lệnh và giao diện web chạy cục bộ để cấu hình ROI, theo dõi tiến độ, xem video đầu ra và rà soát các sự kiện do AI đề xuất.
 
 **Từ khóa:** phát hiện đối tượng, YOLO, ByteTrack, ROI, đèn giao thông, vạch dừng, video giao thông.
 
@@ -157,6 +157,7 @@ Trong lần chạy suy luận được lưu cho video mẫu 2568 × 1440, hệ t
     - 3.10.2. Ưu điểm và hạn chế
     - 3.10.3. Khả năng ứng dụng, quyền riêng tư và đạo đức dữ liệu
   - 3.11. Tổng hợp và đánh giá kết quả
+  - 3.12. Tổng kết chương
 - Kết luận và hướng phát triển
 - Tài liệu tham khảo
 - Phụ lục
@@ -216,7 +217,7 @@ Về thực tiễn, video gắn nhãn và danh sách sự kiện giúp người 
 
 ## 0.4. Giới hạn đề tài và kết quả đạt được
 
-Đối tượng là video đã ghi từ camera giao thông cố định; các lớp detector gồm `bus`, `car`, `truck`, `green`, `red`, `yellow`. ROI và vạch được thiết lập thủ công cho từng góc quay. Hệ thống không nhận dạng biển số, không tính tốc độ vật lý, không hiệu chỉnh phối cảnh sang tọa độ thực địa và không đưa ra kết luận pháp lý. Kết quả hiện có gồm bộ clean thống kê 11.672 ảnh/31.509 bbox, checkpoint huấn luyện 70 epoch có số liệu validation, pipeline CLI/web và các lần chạy video được mô tả tại Chương 3. Chưa có ground truth sự kiện/tracking để tính độ chính xác hệ thống.
+Đề tài tập trung xây dựng hệ thống phân tích video giao thông từ camera cố định, phát hiện phương tiện và trạng thái đèn tín hiệu, theo dõi phương tiện qua các khung hình, đồng thời kiểm tra quỹ đạo so với vạch dừng để tạo sự kiện cần rà soát. Vùng quan tâm và vị trí vạch dừng được cấu hình theo từng góc quay. Đề tài chưa thực hiện nhận dạng biển số, tính tốc độ thực tế của phương tiện hoặc hiệu chuẩn camera để quy đổi tọa độ ảnh sang tọa độ ngoài thực địa; hệ thống cũng không tự đưa ra kết luận pháp lý về hành vi vi phạm. Kết quả đạt được là đã xây dựng quy trình xử lý dữ liệu, huấn luyện mô hình, tích hợp các thành phần phân tích video và cung cấp giao diện để xem, rà soát kết quả. Các số liệu thực nghiệm và đánh giá chi tiết được trình bày tại Chương 3.
 
 ## 0.5. Bố cục đồ án
 
@@ -266,7 +267,7 @@ Theo dõi đa đối tượng (MOT) liên kết các hộp phát hiện giữa c
 
 Bộ lọc Kalman thường được dùng để dự đoán trạng thái chuyển động từ lịch sử quan sát; thuật toán Hungarian tìm cách gán cặp có tổng chi phí nhỏ nhất. Chất lượng MOT cần được đo bằng nhãn danh tính theo từng frame và các chỉ số như IDF1, MOTA, HOTA, IDSW. Bộ dữ liệu hiện có chủ yếu là nhãn detection YOLO, do đó các chỉ số MOT không được tự suy diễn từ số ID do hệ thống xuất ra.
 
-Ở cấp sự kiện, TP là sự kiện hệ thống khớp với ground truth theo video, hướng xe và dung sai thời gian đã định; FP là dự đoán không có nhãn sự kiện tương ứng; FN là sự kiện chuẩn bị bỏ sót. Từ đó tính Precision = TP/(TP+FP), Recall = TP/(TP+FN), F1 = 2×Precision×Recall/(Precision+Recall). Cần định nghĩa quy tắc ghép trước khi đánh giá; các chỉ số sự kiện hiện chưa tính do chưa có ground truth.
+Ở cấp sự kiện, TP là sự kiện hệ thống khớp với ground truth theo video, hướng xe và dung sai thời gian đã định; FP là dự đoán không có nhãn sự kiện tương ứng; FN là sự kiện chuẩn bị bỏ sót. Từ đó tính Precision = TP/(TP+FP), Recall = TP/(TP+FN), F1 = 2×Precision×Recall/(Precision+Recall). Test 6 hiện có ba nhãn sự kiện dương tính; cần chốt quy ước frame/dung sai ghép và rà soát toàn video để xác định FP/FN trước khi báo cáo chỉ số tổng thể.
 
 ### 1.2.3. Bài toán xử lý ảnh hỗ trợ
 
@@ -510,14 +511,18 @@ OpenCV đọc lần lượt từng frame. Ảnh suy luận được resize giữ
 
 ### 2.3.2. Module phát hiện ô tô bằng YOLO
 
-Tên lớp lấy từ checkpoint và được gom thành nhóm xe và nhóm màu đèn. Phương tiện được phát hiện trên ảnh suy luận toàn khung hình. Mặc định các lớp xe được chuyển vào API `model.track` với ByteTrack YAML của Ultralytics; người dùng có thể chọn tracker này hoặc tracker tự cài qua CLI hay giao diện web. Với cấu hình web mặc định, `light_conf=0,25` và `vehicle_conf=0,6`; nếu không truyền `track_conf`, ngưỡng dự đoán của Ultralytics là giá trị nhỏ hơn giữa hai ngưỡng này. Tracker tự cài dùng `track_conf=0,1` mặc định để giữ detection điểm thấp cho lượt ghép thứ hai. `vehicle_conf` là ngưỡng xét quỹ đạo/sự kiện, không quyết định việc vẽ hộp: hộp track thuộc lớp xe có tâm trong ROI vẫn được vẽ khi confidence thấp hơn ngưỡng sự kiện. Bộ theo dõi tự cài giữ các trạng thái New/Tracked/Lost/Removed và dùng Kalman xyah cùng Hungarian trên chi phí IoU. Các tùy chọn cải tiến association được tắt mặc định: biou mở rộng hộp theo hệ số riêng cho hai giai đoạn ghép; directional gating cộng chi phí cho dịch chuyển đủ nhanh nhưng ngược hướng luồng xe; NSA Kalman nhân nhiễu đo \(R\) với \(1-\text{conf}\). Các cờ CLI `--biou`, `--dir-gating`, `--nsa-kalman` cho phép bật riêng từng cải tiến. Tùy chọn `--signal-lifecycle` nối thêm ngữ cảnh đèn và vùng hàng chờ để nới thời gian giữ một track Lost đang dừng khi đèn đỏ, cùng khoảng grace sau khi chuyển xanh. Tùy chọn `--stitch` so khớp vùng lân cận vạch, khoảng cách ground point và histogram HSV để tái sử dụng ID track vừa mất; mỗi lần nối được ghi ra log và ID đó tiếp tục được dùng ở bước khử trùng sự kiện.
+Tên lớp lấy từ checkpoint và được gom thành nhóm xe và nhóm màu đèn. Phương tiện được phát hiện trên ảnh suy luận toàn khung hình. Người dùng có thể chọn ByteTrack YAML của Ultralytics hoặc tracker ByteTrack tự cài qua CLI/web. Trong các job web được dùng làm kết quả thực nghiệm của báo cáo, tracker tự cài chạy với `track_conf=0,1`, `track_buffer=60`, bật `appearance_reid` và cửa sổ tìm lại `reid_window=60` frame; ở video 30 FPS, cửa sổ này tương đương khoảng 2 giây. Web hiện mặc định chọn tracker tự cài và bật ReID; các job cũ dùng Ultralytics vẫn có thể mở nhưng không có tính năng ReID này. CLI vẫn mặc định dùng tracker Ultralytics nếu không chỉ định `--tracker`. Với Ultralytics, nếu không truyền `track_conf`, ngưỡng dự đoán là giá trị nhỏ hơn giữa `light_conf=0,25` và `vehicle_conf=0,6`. `vehicle_conf` là ngưỡng xét quỹ đạo/sự kiện, không quyết định việc vẽ hộp: hộp track thuộc lớp xe có tâm trong ROI vẫn được vẽ khi confidence thấp hơn ngưỡng sự kiện.
+
+Tracker tự cài giữ các trạng thái New/Tracked/Lost/Removed và dùng Kalman xyah cùng Hungarian trên chi phí IoU. Mỗi đối tượng có `object_id` ổn định trong một lượt chạy, tách khỏi `track_id` nội bộ vốn có thể đổi. Khi bật ReID, tracker lưu tối đa 8 mẫu histogram màu HSV của mỗi track; detection mới chưa ghép được sẽ được so với các track vừa mất dấu cùng lớp, trong cửa sổ thời gian và cổng vị trí dự đoán. Nếu ngoại hình đủ giống và không có ứng viên cạnh tranh gần bằng, detection được gán lại `object_id` cũ nhưng tạo `track_id` mới. Cùng khung hình mất dấu cũng được xét; khi mơ hồ, tracker không tự gộp và đánh dấu cần rà soát. Đây là heuristic histogram/vị trí, không phải mô hình ReID đã huấn luyện.
+
+Các tùy chọn association khác gồm BIoU mở rộng hộp theo hệ số riêng cho hai giai đoạn ghép; directional gating cộng chi phí cho dịch chuyển đủ nhanh nhưng ngược hướng luồng xe; NSA Kalman nhân nhiễu đo \(R\) với \(1-\text{conf}\). Các cờ CLI `--biou`, `--dir-gating`, `--nsa-kalman` cho phép bật riêng từng cải tiến. Directional gating tác động lên ghép detection với track đang hoạt động, không phải điều kiện hướng bắt buộc của bước ReID. Tùy chọn `--signal-lifecycle` nối thêm ngữ cảnh đèn và vùng hàng chờ để nới thời gian giữ một track Lost đang dừng khi đèn đỏ, cùng khoảng grace sau khi chuyển xanh. Tùy chọn `--stitch` là cơ chế riêng, chỉ tìm nối trong vùng lân cận vạch.
 Suy luận phương tiện được thực hiện trên ảnh toàn khung hình, sau đó các hộp được ánh xạ về tọa độ ảnh gốc để áp dụng ROI. Confidence detector phục vụ việc tạo các phát hiện đầu vào; `vehicle_conf` được dùng ở bước quyết định có cập nhật quỹ đạo và xét sự kiện. Cơ chế này tách việc hiển thị hộp track trong ROI khỏi ngưỡng tạo sự kiện.
 
 ### 2.3.3. Module theo dõi đối tượng (bộ theo dõi đề xuất)
 
-Module `tracker/` quản lý các track theo trạng thái New/Tracked/Lost/Removed, dự đoán bằng Kalman xyah và ghép bằng Hungarian trên chi phí IoU. Các tùy chọn association/lifecycle gồm Buffered IoU, directional gating, NSA Kalman, signal-aware lifecycle và stitching; chúng tắt mặc định. Mỗi tùy chọn có cờ CLI tương ứng, ngoại trừ preset chạy theo cấu hình A–F qua script ablation.
+Module `tracking/custom_bytetrack/` quản lý các track theo trạng thái New/Tracked/Lost/Removed, dự đoán bằng Kalman xyah và ghép bằng Hungarian trên chi phí IoU. Đặc trưng histogram HSV nằm trong `tracking/reid/`; adapter cho tracker Ultralytics nằm trong `tracking/ultralytics_tracker/`. Web bật appearance ReID mặc định khi dùng tracker tự cài; ở CLI, ReID cần bật bằng `--appearance-reid`. Các cải tiến association/lifecycle như Buffered IoU, directional gating, NSA Kalman, signal-aware lifecycle và stitching là các cơ chế riêng, có cờ CLI tương ứng.
 
-**Hình 2.4. Sơ đồ lớp của module `tracker/`**
+**Hình 2.4. Sơ đồ lớp của module `tracking/custom_bytetrack/`**
 
 ```mermaid
 classDiagram
@@ -531,9 +536,11 @@ classDiagram
     }
     class Track {
         +int track_id
+        +int object_id
         +TrackState state
         +bool is_activated
         +float confidence
+        +appearance_gallery
         +update(detection, frame_id)
         +mark_lost()
         +mark_removed()
@@ -543,6 +550,11 @@ classDiagram
         +float track_high_thresh
         +float track_low_thresh
         +int track_buffer
+        +bool appearance_reid
+        +int reid_window
+        +float reid_histogram_threshold
+        +float reid_match_threshold
+        +float reid_score_margin
         +bool biou
         +bool dir_gating
         +bool signal_lifecycle
@@ -620,8 +632,10 @@ flowchart TD
 
 File JSON chứa `FRAME_SIZE`, `VEHICLE_DETECT_ROI_POLYGON`, `RED_LIGHT_DETECT_ROI_POLYGON`, `STOP_LINE_COORDS`, `CROSSING_DIRECTION` và ngưỡng vượt vạch. Các trường tùy chọn gồm `GROUND_POINT_MODE`, `TRAFFIC_FLOW_DIRECTION`, `QUEUE_ZONE_POLYGON` và `STITCH_MARGIN`; giao diện web cho chọn `center` hoặc `bottom_center` ở bước thiết lập ROI, còn config cũ không có `GROUND_POINT_MODE` tiếp tục mặc định dùng `center`. Nếu không có hướng luồng xe, hệ thống suy ra vector đơn vị từ pháp tuyến vạch dừng và `CROSSING_DIRECTION`. `QUEUE_ZONE_POLYGON` là đa giác vùng xe dừng, được kiểm tra nằm trong ảnh; muốn bật vòng đời theo tín hiệu phải khai báo trường này. `STITCH_MARGIN` xác định dải pixel quanh đoạn vạch để xét nối, mặc định 40 pixel ảnh gốc. Bộ cấu hình có giao diện GUI chọn đa giác xe, đa giác đèn và hai điểm vạch. `load_config` kiểm tra cấu hình có đúng kích thước ảnh, các điểm nằm trong khung hình và chiều cắt thuộc `up` hoặc `down`.
 
-**Hình 2.7. Ảnh chụp công cụ cấu hình ROI `05_roi_config.py`**
-*Cần chụp màn hình công cụ trên video mẫu; che thông tin nhạy cảm nếu có.*
+**Hình 2.7. Một phần đầu ra video tại sự kiện ứng viên**
+![Khung hình đầu ra có hộp phương tiện, vùng đèn và vạch dừng](figures/test6_event_evidence.png)
+
+*Nguồn: job Test 6 Demo che khuất đã lưu trong `.webdata/jobs/`. Hình cho thấy lớp phủ khi xử lý, không phải ảnh chụp giao diện công cụ cấu hình hoặc toàn bộ đa giác ROI.*
 
 Khi bật `signal_lifecycle`, mỗi lần cập nhật tracker nhận `TrackerContext` gồm trạng thái đèn, vùng chờ đổi sang tọa độ inference và frame index. Track Lost đủ điều kiện khi điểm đại diện cuối còn trong polygon và tốc độ Kalman nhỏ hơn `stationary_speed_threshold`; lúc đèn đỏ dùng `max_age_red` thay vì `track_buffer`. Track đứng yên đủ điều kiện cũng được đặt các vận tốc Kalman về 0 khi dự đoán. Khi chuyển xanh, mức tuổi kéo dài duy trì `green_grace_frames`, sau đó trở lại giới hạn bình thường.
 
@@ -720,9 +734,9 @@ Xe đã ở phía sau vạch ngay từ đầu không được armed; giao cắt 
 
 ### 2.4.3. Xử lý che khuất, mất ID và tránh báo trùng
 
-Tracker tự cài duy trì track Lost trong giới hạn `track_buffer`; khi bật `signal_lifecycle`, track Lost có điểm cuối trong `QUEUE_ZONE_POLYGON`, tốc độ thấp và bối cảnh đèn phù hợp có thể được giữ lâu hơn. Directional gating phạt ghép cặp ngược hướng, BIoU mở rộng hộp ở các giai đoạn association, NSA Kalman điều chỉnh nhiễu đo theo confidence. Các cơ chế này giảm rủi ro trong một số tình huống nhưng chưa được đánh giá trên nhãn ID chuẩn.
+Tracker tự cài duy trì track Lost theo `track_buffer`; khi bật `signal_lifecycle`, track Lost có điểm cuối trong `QUEUE_ZONE_POLYGON`, tốc độ thấp và bối cảnh đèn phù hợp có thể được giữ lâu hơn. Appearance ReID là cơ chế riêng: snapshot track Lost được giữ trong `reid_window=60` frame; gallery lưu tối đa 8 histogram HSV, lấy mẫu mỗi 5 frame. Detection mới được so với track cùng lớp, dựa trên histogram và vị trí dự đoán từ vận tốc. Mặc định ngưỡng histogram và điểm ghép là 0,6, khoảng cách điểm ghép tốt nhất với ứng viên thứ hai phải đạt ít nhất 0,08. Cổng vị trí nới thêm 4 pixel hệ tọa độ tracker cho mỗi frame mất dấu, tối đa 60 frame. Cho phép khoảng cách thời gian bằng 0; nếu ứng viên mơ hồ, không gộp tự động.
 
-`stitch` lưu snapshot track Lost trong một cửa sổ frame, rồi so khớp detection mới gần vạch theo khoảng cách ground point và tương đồng histogram H-S. Nếu đạt các ngưỡng, ID cũ được kế thừa; nếu không thì track mới giữ ID mới. Nối track cần rà soát trên ảnh/video vì hai xe gần nhau có thể bị ghép nhầm.
+Khi ReID ghép thành công, `object_id` cũ được giữ nhưng `track_id` của đoạn track mới vẫn khác. Đây là heuristic appearance + vị trí, không phải mô hình ReID đã huấn luyện; histogram màu có thể nhầm các xe cùng màu. Directional gating chỉ tác động lên association của track đang hoạt động, không bắt buộc xe đi theo một chiều riêng trong ReID. BIoU và NSA Kalman cũng tác động ở association thông thường. `--stitch` là cơ chế tùy chọn khác, giới hạn quanh vạch và dùng khoảng cách ground point cùng histogram; cần rà soát khả năng ghép nhầm.
 
 **Hình 2.11. Lưu đồ vòng đời track theo trạng thái đèn và vùng chờ**
 
@@ -746,31 +760,29 @@ flowchart TD
 
 Phần kéo dài tuổi chỉ áp dụng cho track đủ điều kiện theo vùng chờ; nếu không khai báo `QUEUE_ZONE_POLYGON`, không có track nào được hưởng phần mở rộng này.
 
-**Hình 2.12. Lưu đồ nối track tại vùng vạch**
+**Hình 2.12. Lưu đồ appearance ReID khi track mất dấu**
 
 ```mermaid
 flowchart TD
-    L[Track mất dấu] --> S{Có bbox cuối và histogram HSV?}
-    S -- Không --> N[Không tạo ứng viên nối]
-    S -- Có --> B[Lưu snapshot ID, điểm đại diện và histogram]
-    B --> D[Detection mới xuất hiện]
-    D --> W{Snapshot còn trong stitch_window?}
-    W -- Không --> F[Loại snapshot hết hạn]
-    W -- Có --> M{Ứng viên nằm trong dải stitch_margin quanh vạch?}
-    M -- Không --> N
-    M -- Có --> C{Khoảng cách ground point đạt ngưỡng?}
-    C -- Không --> N
-    C -- Có --> H{Tương đồng histogram và điểm nối đạt ngưỡng?}
+    L[Track chuyển Lost] --> A[Lưu object_id, class, vị trí/vận tốc và gallery HSV]
+    A --> W{Trong reid_window?}
+    W -- Không --> X[Loại ứng viên hết hạn]
+    W -- Có --> D[Detection chưa ghép được]
+    D --> C{Cùng class và trong cổng vị trí dự đoán?}
+    C -- Không --> N[Tạo object_id mới]
+    C -- Có --> H{Histogram và điểm ghép đạt ngưỡng?}
     H -- Không --> N
-    H -- Có --> R[Kế thừa ID cũ và ghi log nối]
+    H -- Có --> M{Chênh điểm với ứng viên kế tiếp đủ lớn?}
+    M -- Không --> U[Giữ riêng, đánh dấu cần rà soát]
+    M -- Có --> R[Giữ object_id cũ, tạo track_id mới]
     R --> E([Tiếp tục tracking])
 ```
 
-**Tránh báo trùng.** Tập `captured` ngăn cùng một `track_id` tạo nhiều sự kiện trong một lượt phân tích. Nếu tracker đổi ID sau che khuất, cơ chế này không bảo đảm nhận ra đó là cùng một phương tiện; stitching có thể giúp kế thừa ID trong các trường hợp đạt ngưỡng nhưng cũng có khả năng nối sai. Vì vậy đầu ra cần được người vận hành rà soát.
+**Tránh báo trùng.** Tập `captured` ngăn cùng một `object_id` tạo nhiều sự kiện trong một lượt phân tích. Nếu tracker đổi ID mà không nối lại được object identity, cơ chế này không bảo đảm nhận ra đó là cùng một phương tiện và có thể phát sinh sự kiện trùng; kết quả vẫn cần người vận hành rà soát.
 
 ### 2.4.4. Bảng tham số và cách chọn tham số
 
-Các giá trị dưới đây là giá trị mặc định trong `TrackerConfig`, không phải giá trị tối ưu hóa từ validation. Chưa có quy trình quét tham số trên tập validation có ground truth; khoảng quét do đó chưa được xác định.
+Các giá trị dưới đây là mặc định của `TrackerConfig`, trừ các giá trị ghi rõ cho web; chúng chưa được tối ưu hóa bằng validation. Web đặt `track_buffer=60` và bật `appearance_reid` khi dùng tracker tự cài; cấu hình CLI mặc định không bật ReID. Chưa có quy trình quét tham số trên tập validation có ground truth; khoảng quét do đó chưa được xác định.
 
 **Bảng 2.4. Tham số tracker mặc định**
 
@@ -789,6 +801,11 @@ Các giá trị dưới đây là giá trị mặc định trong `TrackerConfig`
 | `stitch_histogram_threshold` | 0,55 | Tương đồng histogram tối thiểu | Chưa thực hiện |
 | `stitch_score_threshold` | 0,65 | Điểm nối tối thiểu | Chưa thực hiện |
 | `stitch_margin` | 40 px | Dải quanh vạch để tìm ứng viên nối | Chưa thực hiện |
+| `reid_window` | 60 frame | Thời gian giữ ứng viên ReID | Chưa thực hiện |
+| `reid_distance_threshold` | 80 px ảnh gốc | Cổng vị trí ban đầu, được quy đổi sang hệ tọa độ tracker | Chưa thực hiện |
+| `reid_histogram_threshold` | 0,60 | Tương đồng tối thiểu với gallery HSV | Chưa thực hiện |
+| `reid_match_threshold` | 0,60 | Điểm ghép tối thiểu | Chưa thực hiện |
+| `reid_score_margin` | 0,08 | Chênh điểm tối thiểu để tránh ghép mơ hồ | Chưa thực hiện |
 
 **Bảng 2.5. Cờ và preset ablation A–F**
 
@@ -813,8 +830,9 @@ Các giá trị dưới đây là giá trị mặc định trong `TrackerConfig`
 
 Giao diện có trang rà soát sự kiện AI để đánh dấu xác nhận, không vi phạm, chưa chắc hoặc chưa xem và ghi chú. Trạng thái rà soát là thông tin người dùng bổ sung; nó không thay đổi sự kiện gốc trong `violations.csv` và không phát hiện các sự kiện mà mô hình bỏ sót.
 
-**Hình 2.13. Ảnh chụp giao diện cấu hình ROI và các mục tùy chọn**
-*Cần chụp giao diện web hiện tại, thể hiện riêng bốn mục thu gọn; không có ảnh chụp giao diện trong thư mục tài liệu.*
+**Hình 2.13. Giao diện cấu hình và rà soát kết quả**
+
+Giao diện web cho phép chọn tracker, cấu hình điểm tham chiếu bbox, đặt ROI/vạch và rà soát sự kiện. Ảnh chụp giao diện chưa được lưu trong hồ sơ job; các video đã xử lý và đầu ra trực quan được dùng làm bằng chứng triển khai ở Chương 3.
 
 
 ### 2.5.3. Sơ đồ tuần tự luồng chính
@@ -871,28 +889,30 @@ Các công nghệ được lựa chọn theo vai trò trong sản phẩm. YOLO/P
 | Flask, Waitress | API và giao diện web chạy cục bộ |
 | Roboflow | Quản lý/gán nhãn và export dữ liệu YOLO |
 
-**Môi trường thực nghiệm:** các thông tin phần cứng/phần mềm đã xác minh được tổng hợp ở Bảng 3.9; thông tin máy train chưa có trong hồ sơ được giữ ở trạng thái cần bổ sung.
+**Môi trường thực nghiệm:** phần cứng/phần mềm đối chiếu được và giới hạn về thời điểm ghi nhận được trình bày tại Bảng 3.9.
 
 ## 3.2. Xây dựng bộ dữ liệu
 
 ### 3.2.1. Nguồn dữ liệu và chuẩn bị dữ liệu
 
-Ảnh do sinh viên tự tìm kiếm và thu thập từ camera CCTV giao thông và các luồng CCTV công khai trên YouTube. Sinh viên tự gán nhãn bằng Roboflow hơn 2.000 ảnh trong project `NhanDienGiaoThong`; ngoài ra, sinh viên sử dụng dataset `KLTN-vehicles` lấy từ Roboflow. Sau khi chuẩn hóa nhãn và loại lớp xe máy không thuộc phạm vi đề tài, hai nguồn được ghép thành bộ dữ liệu phương tiện ban đầu. Vì số mẫu bus và truck trong bộ ban đầu còn ít, sinh viên bổ sung riêng các dataset Bus và Truck. Tiếp đó, khoảng một nửa dữ liệu từ project Traffic Light Detection được đưa vào bộ sáu lớp, rồi bộ ghép được làm sạch. Workspace hiện không lưu đủ metadata về số clip gốc, độ phân giải/FPS của từng nguồn hay điều kiện thời tiết/ánh sáng; không suy ra các trường này từ số ảnh.
+Theo thông tin của sinh viên, thư mục làm việc xử lý dữ liệu và huấn luyện là `TRAIN_DATA_ROOT`; dữ liệu dùng để train nằm trong thư mục con `Train`. Các thư mục dataset đặt trong repository trên ổ D chỉ để tham chiếu/minh họa, không được dùng làm nguồn dữ liệu huấn luyện.
+
+Sinh viên tự tìm các đoạn CCTV giao thông từ một số tỉnh miền Nam và CCTV Đà Nẵng trên YouTube, cắt thành 2.078 ảnh, gán nhãn trên Roboflow, áp dụng lật ngang (flip H) để tăng số lượng và resize về 640×640. Kiểm đếm tên file có `flip` trong `NhanDienGiaoThong.v3i.yolo11` cho thấy có 732 ảnh flip: 515 ở train, 148 ở valid và 69 ở test. Project tự thu thập này được ghép với dataset `KLTN-vehicles` có 2.310 ảnh; kết quả hơn 4.300 ảnh được lưu thành `NhanDienGiaoThong.3i.yolo11`. Sau đó, sinh viên bổ sung dữ liệu Bus và Truck để tăng mẫu cho hai lớp còn ít, rồi ghép khoảng một nửa bộ Traffic Light Detection từ Roboflow để tạo bộ sáu lớp. Bộ dữ liệu sau ghép là `Final Merge`; sau bước clean thành `Final Cleaned`, sinh viên tải dữ liệu lên project Roboflow `DATADOANNEW`. Theo xác nhận của sinh viên, một số file gặp lỗi khi tải lên, nên bản còn lại có 11.668 ảnh; phiên bản này được tải lại vào thư mục `Train` trên ổ C để huấn luyện.
+
+Workspace không lưu đủ metadata về số clip gốc, độ phân giải/FPS của từng nguồn hay điều kiện thời tiết/ánh sáng; không suy ra các trường này từ số ảnh.
 
 **Bảng 3.1. Quy mô và vai trò các project dữ liệu theo ảnh chụp Roboflow**
 
 | Project hiển thị trên Roboflow | Số ảnh hiển thị | Vai trò trong quy trình |
 |---|---:|---|
-| NhanDienGiaoThong | 2.078 | Ảnh sinh viên tự thu thập và tự gán nhãn |
-| KLTN-vehicles | 2.310 | Dataset có sẵn; loại lớp xe máy và chuẩn hóa nhãn trước khi ghép |
+| NhanDienGiaoThong | 2.078 | Ảnh CCTV sinh viên tự thu thập, cắt, gán nhãn; áp dụng lật ngang (flip H) và resize 640×640; thư mục `NhanDienGiaoThong.v3i.yolo11` có 732 ảnh tên chứa `flip` |
+| KLTN-vehicles | 2.310 | Dataset có sẵn; ghép với bộ tự thu thập thành hơn 4.300 ảnh (`NhanDienGiaoThong.3i.yolo11`) |
 | Bus | 1.000 | Bổ sung mẫu xe buýt |
 | Truck | 1.016 | Bổ sung mẫu xe tải |
 | Traffic Light Detection | 9.710 | Nguồn dữ liệu đèn; sử dụng khoảng một nửa |
 | DATADOANNEW | 11.668 | Project Roboflow lưu bộ dữ liệu tổng hợp sau clean |
 
-Các số này là ảnh chụp số lượng từng project tại thời điểm ghi nhận; không cộng các nguồn thành tổng dataset vì `DATADOANNEW` là project đích sau tổng hợp, không phải nguồn độc lập. Riêng nguồn Traffic Light có số liệu không nhất quán: ảnh chụp Roboflow ghi 9.710 ảnh, README trong thư mục dữ liệu cục bộ ghi 1.176 ảnh, trong khi đếm các split train/valid/test của chính thư mục đó được 10.886 ảnh và 10.886 nhãn. Script ghép hiện trỏ tới thư mục cục bộ này. Vì vậy, 9.710 là số trên ảnh chụp, không dùng làm mẫu số để suy ra số file đã lấy; kết quả lấy mẫu thực tế được đối chiếu tại Mục 3.2.2. Chưa có manifest hoặc lịch sử phiên bản đủ để giải thích chênh lệch.
-
-Sau khi làm sạch, sinh viên tải bộ dữ liệu lên Roboflow để lưu trữ tại project `DATADOANNEW`; bản export dùng train được tải vào `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\datasets\export-yolo26`.
+Các số nguồn là số hiển thị trên ảnh chụp Roboflow, không cộng thành tổng dataset vì `DATADOANNEW` là project đích sau tổng hợp. Ảnh chụp ghi project Traffic Light Detection có 9.710 ảnh. README và số file đếm được trong bản dataset đặt ở repository ổ D lần lượt ghi 1.176 và 10.886 ảnh/nhãn; theo xác nhận của sinh viên, các thư mục dataset ở ổ D chỉ là bản tham chiếu/minh họa, không phải nguồn dùng để train. Vì vậy, không dùng số đếm của bản ổ D để suy ra số ảnh Traffic Light đã thực sự lấy trong quy trình trên ổ C. Sinh viên xác nhận đã dùng khoảng một nửa bộ dữ liệu Roboflow, nhưng số chính xác của phiên bản nguồn được dùng chưa có manifest để đối soát. Dữ liệu huấn luyện thực tế được tải từ `DATADOANNEW` vào thư mục `Train` trên ổ C với 11.668 ảnh.
 
 **Hình 3.1. Ví dụ ảnh từ các góc camera/điều kiện thu thập**
 *Cần chọn ảnh CCTV được phép sử dụng, làm mờ biển số và thông tin nhận dạng trước khi đưa vào báo cáo.*
@@ -909,30 +929,28 @@ Sau khi làm sạch, sinh viên tải bộ dữ liệu lên Roboflow để lưu 
 
 ### 3.2.2. Tiền xử lý và gán nhãn
 
-Luồng dưới đây phân biệt bước gộp ban đầu được mô tả từ quy trình của sinh viên với các bước có script trong workspace. Nhánh augmentation ngoại tuyến là một công cụ riêng; không được nhầm với dữ liệu export đã dùng trong lần train được báo cáo.
+Sơ đồ thể hiện quy trình do sinh viên xác nhận. Các bản dataset trong repository ổ D chỉ dùng tham chiếu/minh họa; dữ liệu xử lý và train thực tế nằm dưới `TRAIN_DATA_ROOT`, trong đó bản tải từ Roboflow dùng train nằm trong `Train`.
 
 ```mermaid
 flowchart TD
-    A[NhanDienGiaoThong và KLTN-vehicles]
-    A --> B[Gộp ban đầu / bỏ lớp xe máy / chuẩn hóa theo tên<br/>Không còn script tái lập trong workspace]
-    B --> C[NhanDienGiaoThong.v3i<br/>bus, car, truck]
-    C --> D[Code/01_merge_truck_bus_into_nhandien.py<br/>remap Bus và Truck, giữ split nguồn]
-    D --> E[NhanDienGiaoThong_merged]
-    E --> F[Code/02_merge_with_traffic_light.py<br/>lấy mẫu theo từng split, remap sáu lớp]
-    TL[traffic light.v1i.yolov11] --> F
-    F --> G[Final_merged]
-    G --> H[Code/03_data_cleaning.py<br/>lọc cặp ảnh-nhãn và dòng YOLO]
-    H --> I[Final_cleaned<br/>CSV thống kê và nhãn đã lọc]
-    I --> J[Roboflow DATADOANNEW]
-    J --> K[export-yolo26<br/>auto-orientation, resize Stretch 640x640]
-    K --> L[Dataset của lần train 70 epoch]
-    I -. công cụ tùy chọn .-> M[Code/04_preprocessing.py<br/>augmentation ngoại tuyến chỉ cho train]
-    M -. không phải đầu vào lần train này .-> N[Final_preprocessed<br/>không có trong workspace hiện tại]
+    A[2.078 ảnh CCTV tự thu thập, gán nhãn Roboflow<br/>lật ngang (flip H), resize 640x640]
+    A --> B[Ghép 2.310 ảnh KLTN-vehicles]
+    B --> C[NhanDienGiaoThong.3i.yolo11<br/>hơn 4.300 ảnh]
+    C --> D[Bổ sung dữ liệu Bus và Truck]
+    D --> E[Ghép khoảng một nửa bộ Traffic Light Detection]
+    TL[Traffic Light Detection trên Roboflow] --> E
+    E --> F[Final Merge<br/>bộ dữ liệu sáu lớp]
+    F --> G[Clean dữ liệu]
+    G --> H[Final Cleaned]
+    H --> I[Tải lên Roboflow DATADOANNEW<br/>một số file lỗi]
+    I --> J[Tải phiên bản 11.668 ảnh về<br/>C:\\Users\\ADMIN\\Downloads\\DATA\\XuLyData\\Train]
+    J --> K[Huấn luyện YOLO26s<br/>70 epoch]
+    R[Dataset trong repository ổ D<br/>chỉ tham chiếu/minh họa] -. không dùng train .-> H
 ```
 
 #### Chuẩn hóa thứ tự lớp trong bộ dữ liệu gộp
 
-Trong `C:\Users\ADMIN\Downloads\DATA\XuLyData\Final_cleaned\data.yaml`, thứ tự lớp trên máy là:
+Trong `TRAIN_DATA_ROOT\Final_cleaned\data.yaml`, thứ tự lớp trên máy là:
 
 **Bảng 3.3. Thứ tự lớp trong YAML gộp và làm sạch**
 
@@ -945,7 +963,7 @@ Trong `C:\Users\ADMIN\Downloads\DATA\XuLyData\Final_cleaned\data.yaml`, thứ t�
 | 4 | red | Đèn đỏ |
 | 5 | yellow | Đèn vàng |
 
-Đây là thứ tự dùng để mô tả các bước gộp và clean trên máy. Các script xử lý trong `C:\Users\ADMIN\Downloads\DATA\XuLyData` tạo `Final_merged` và `Final_cleaned` theo mapping này.
+Đây là thứ tự dùng để mô tả các bước gộp và clean trên máy. Các script xử lý trong `TRAIN_DATA_ROOT` tạo `Final_merged` và `Final_cleaned` theo mapping này.
 
 #### Ghép bộ dữ liệu giao thông ban đầu
 
@@ -963,7 +981,7 @@ Do số lượng mẫu bus và truck trong bộ phương tiện ban đầu còn 
 
 ID nguồn của Traffic Light được ánh xạ sang thứ tự trên máy: `green=0 → 3`, `red=1 → 4`, `yellow=2 → 5`. Các dòng nhãn được remap, ảnh và label được thêm prefix `TL_`. Bộ gốc không bị thay đổi. Cách lấy một nửa theo nhóm nhãn giúp giảm lượng ảnh đèn nhưng vẫn giữ gần tương quan lớp; nó không bảo đảm số instance từng lớp chính xác bằng một nửa do ảnh có thể chứa nhiều nhãn, file lỗi hoặc thiếu ảnh.
 
-Đối chiếu thư mục cho thấy `Final_merged` có 3.810 ảnh đèn ở train, 1.089 ở valid và 545 ở test, tổng 5.444 ảnh. Các con số đúng bằng mục tiêu lấy \(\lceil N/2\rceil\) theo từng split của 7.620/2.177/1.089 ảnh đang có trong thư mục nguồn cục bộ; không suy ra chúng từ con số 9.710 trên ảnh chụp Roboflow.
+Script lưu trong hồ sơ có quy tắc lấy mục tiêu xấp xỉ một nửa số ảnh theo từng split và phân bổ theo nhóm class-combination. Bản dataset đặt trong repository ổ D có một số đếm nguồn/lấy mẫu riêng, nhưng đây chỉ là bản tham chiếu/minh họa, không phải bản xử lý dùng để train; vì vậy các số đếm đó không được dùng làm thống kê xác nhận số ảnh đèn thực tế trong `Final Merge` trên ổ C. Số lượng chính xác được lấy từ phiên bản Traffic Light Detection đã dùng trên ổ C hiện chưa có manifest để đối soát.
 
 #### Làm sạch nhãn YOLO
 
@@ -981,22 +999,22 @@ Script kiểm tra ba split và từng cặp ảnh–nhãn:
 
 Kết quả kiểm đếm từ các CSV clean hiện có:
 
-**Bảng 3.4. Đối soát cặp ảnh–nhãn và bbox qua các bước xử lý**
+**Bảng 3.4. Số liệu hồ sơ clean tham chiếu và quy mô bộ train**
 
-| Split | `Final_merged` cặp ảnh–nhãn | `Final_cleaned` cặp theo CSV | Export train cặp ảnh–nhãn | Bbox hợp lệ sau clean |
+| Split | `Final Merge` trong bản tham chiếu | `Final Cleaned` theo CSV tham chiếu | Bản Roboflow tải về train | Bbox hợp lệ theo hồ sơ clean |
 |---|---:|---:|---:|---:|
-| Train | 8.182 | 8.166 | 8.163 | 21.945 |
-| Valid | 2.342 | 2.335 | 2.334 | 6.394 |
-| Test | 1.175 | 1.171 | 1.171 | 3.170 |
+| Train | 8.182 | 8.166 | Chưa đối soát theo split | 21.945 |
+| Valid | 2.342 | 2.335 | Chưa đối soát theo split | 6.394 |
+| Test | 1.175 | 1.171 | Chưa đối soát theo split | 3.170 |
 | **Tổng** | **11.699** | **11.672** | **11.668** | **31.509** |
 
-`Final_merged` là số cặp đếm trực tiếp trong ba split; `Final_cleaned` lấy từ `class_distribution.csv` và số dòng nhãn hợp lệ; export train được đếm trong thư mục `export-yolo26` và mọi ảnh đều có nhãn cùng stem. Tỷ lệ split của bộ clean theo CSV xấp xỉ 70%/20%/10%. Trong `cleaning_report.csv` có 87 dòng nhãn bị loại và 27 cặp mà mọi dòng đều không hợp lệ; cả 87 dòng bị loại đều sai số trường so với định dạng detection năm trường (21 dòng từ file có prefix `MERGED_`, 66 từ `TL_`). Một số dòng có rất nhiều tọa độ, phù hợp với khả năng nhãn polygon/segmentation hoặc định dạng khác; script clean không chuyển polygon thành bbox mà loại dòng đó. Cần xác minh nguồn nhãn trước khi kết luận đó là lỗi gán nhãn. Báo cáo còn có 2.232 bản ghi cảnh báo kích thước bbox được giữ nguyên; đây là số bản ghi cảnh báo, không phải số ảnh độc nhất.
+Các số `Final Merge`/`Final Cleaned` và bbox trong bảng được lấy từ CSV/bản dữ liệu tham chiếu hiện có trong repository ổ D; theo xác nhận của sinh viên, các thư mục này không phải đầu vào huấn luyện. Tổng 11.668 ảnh của bản Roboflow tải về dùng train được xác nhận riêng; chưa có bảng đối soát độc lập để phân bổ số lượng đó theo split. Tỷ lệ split 70%/20%/10% là của hồ sơ clean tham chiếu, không được xem là thống kê đã xác minh của bản train ở ổ C. Trong `cleaning_report.csv` có 87 dòng nhãn bị loại và 27 cặp mà mọi dòng đều không hợp lệ; cả 87 dòng bị loại đều sai số trường so với định dạng detection năm trường (21 dòng từ file có prefix `MERGED_`, 66 từ `TL_`). Một số dòng có rất nhiều tọa độ, phù hợp với khả năng nhãn polygon/segmentation hoặc định dạng khác; script clean không chuyển polygon thành bbox mà loại dòng đó. Cần xác minh nguồn nhãn trước khi kết luận đó là lỗi gán nhãn. Báo cáo còn có 2.232 bản ghi cảnh báo kích thước bbox được giữ nguyên; đây là số bản ghi cảnh báo, không phải số ảnh độc nhất.
 
-Theo xác nhận của sinh viên, bốn cặp ảnh–nhãn bị lỗi trong lúc tải lên Roboflow; điều này giải thích chênh lệch số lượng 11.672 cặp trong CSV clean so với 11.668 cặp của bản export dùng train. Đối chiếu số lượng theo split cho thấy export ít hơn ba cặp ở train, một ở valid và không chênh ở test. Tuy nhiên, chưa có log upload hoặc danh sách tên file để khẳng định chính xác bốn cặp bị lỗi là các cặp nào. Đây là lỗi ở bước upload, không phải kết quả của bước lọc nhãn clean.
+CSV clean trong bản tham chiếu ghi 11.672 cặp ảnh–nhãn; bản tải về từ Roboflow dùng train còn 11.668 ảnh. Theo xác nhận của sinh viên, chênh lệch xuất phát từ một số file lỗi khi upload; chưa có log hoặc danh sách tên file để đối soát từng file lỗi. Vì vậy, 11.672 là số trong CSV clean được lưu để tham chiếu, còn 11.668 là quy mô bản Roboflow thực tế được tải về train.
 
-Ngoài chênh lệch upload đã nêu, khi kiểm tra trực tiếp thư mục `Final_cleaned` trong workspace hiện tại, có ba ảnh JPG không có nhãn cùng stem (một ở train, hai ở test) và ba file `.txt` nằm trong `test/images`. Các file này không được tính vào số cặp trong CSV hay bản export. Đây là tình trạng của bản thư mục hiện có; chưa đủ căn cứ xác định chúng phát sinh ở bước nào.
+Trong bản sao `Final_cleaned` đặt trong repository ổ D có ba ảnh JPG không có nhãn cùng stem (một ở train, hai ở test) và ba file `.txt` nằm trong `test/images`. Đây là tình trạng riêng của bản tham chiếu/minh họa ở ổ D, không được dùng để mô tả nội dung chính xác của export huấn luyện trên ổ C.
 
-Phân bố bbox sau clean theo YAML trên máy:
+Phân bố bbox theo YAML/CSV của bản clean tham chiếu:
 
 **Bảng 3.5. Phân bố bbox sau clean theo lớp và split**
 
@@ -1015,7 +1033,7 @@ Lớp `car` chiếm khoảng 51–53% bbox trong mỗi split; lớp `yellow` ít
 **Hình 3.2. Phân bố bbox theo lớp trong bộ dữ liệu clean**
 ![Phân bố bbox hợp lệ theo lớp và split](figures/data_class_distribution.png)
 
-*Nguồn: `dataset/Final_cleaned/class_distribution.csv`; biểu đồ thể hiện số bbox, không phải số ảnh hay độ chính xác của mô hình.*
+*Nguồn: `dataset/Final_cleaned/class_distribution.csv` trong bản tham chiếu ở repository ổ D; biểu đồ thể hiện số bbox của bản clean này, không phải số ảnh hay độ chính xác của mô hình. Không dùng biểu đồ này như thống kê độc lập của export đã train.*
 
 #### Gán nhãn dữ liệu
 
@@ -1033,15 +1051,17 @@ Sinh viên tự gán nhãn bằng Roboflow hơn 2.000 ảnh trong project `NhanD
 | `yellow` | Tín hiệu đèn vàng | Trạng thái đèn |
 
 **Hình 3.3. Ví dụ nhãn bbox cho phương tiện và đèn tín hiệu**
-*Cần bổ sung ảnh gán nhãn thực tế từ Roboflow; dữ liệu hiện không có CVAT/ID MOT để minh họa gán nhãn theo chuỗi.*
+![Ví dụ bounding box nhãn bus trong batch validation](figures/dataset_annotation_example.png)
+
+*Nguồn: ảnh `val_batch0_labels.jpg` trong hồ sơ train. Hình minh họa nhãn detection ở cấp ảnh; dữ liệu này không có ID MOT theo chuỗi.*
 
 Không có hồ sơ về việc hai người gán độc lập, đo IoU giữa người gán hoặc quy trình phân xử bất đồng. Vì vậy không báo cáo độ đồng thuận gán nhãn; kiểm tra clean xác nhận cú pháp/tọa độ, không chứng minh tính đúng đắn ngữ nghĩa.
 
 #### Định dạng và lưu trữ dữ liệu
 
-Nhãn lưu theo định dạng YOLO detection gồm `class_id x_center y_center width height`, với tọa độ chuẩn hóa theo kích thước ảnh. Dữ liệu clean trên máy được lưu tại `C:\Users\ADMIN\Downloads\DATA\XuLyData\Final_cleaned`; bản export train ở `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\datasets\export-yolo26`.
+Nhãn lưu theo định dạng YOLO detection gồm `class_id x_center y_center width height`, với tọa độ chuẩn hóa theo kích thước ảnh. Thư mục làm việc xử lý dữ liệu là `TRAIN_DATA_ROOT`; phiên bản Roboflow 11.668 ảnh tải về phục vụ huấn luyện nằm trong `TRAIN_DATA_ROOT\Train`. Các thư mục dataset trong repository ổ D chỉ là bản tham chiếu/minh họa.
 
-Sau khi clean, dữ liệu được tải lên project Roboflow `DATADOANNEW` làm bản lưu/trung gian. README của bản export ghi định dạng YOLO26, 11.668 ảnh, auto-orientation, resize 640×640 kiểu Stretch và không augmentation. YAML export ghi:
+Sau khi clean, dữ liệu được tải lên project Roboflow `DATADOANNEW`; theo xác nhận của sinh viên, một số file gặp lỗi trong quá trình tải. Phiên bản còn 11.668 ảnh được tải lại từ Roboflow vào thư mục `Train` trên ổ C để huấn luyện. README của bản export ghi định dạng YOLO26, auto-orientation, resize 640×640 kiểu Stretch và không augmentation. YAML export ghi:
 
 ```yaml
 nc: 6
@@ -1069,11 +1089,11 @@ Sau khi đưa bộ clean lên project Roboflow `DATADOANNEW` và tải phiên b�
 
 ID số của một lớp có thể khác giữa hai phiên bản mà không làm thay đổi ý nghĩa lớp, miễn là nhãn đã được export/remap nhất quán theo tên. Vì vậy, khi mô tả thao tác gộp/clean phải dùng thứ tự lớp trên máy như các bảng ở trên; khi mô tả huấn luyện phải nêu thứ tự của `export-yolo26/data.yaml`. Không được lấy ID số từ giai đoạn này gán thẳng cho giai đoạn kia nếu chưa đối chiếu tên. `train.py` kiểm tra thứ tự export đúng bằng danh sách `bus, car, green, red, truck, yellow`, và model trả tên lớp theo thứ tự export. Pipeline inference lấy tên từ checkpoint nên lớp `truck` vẫn được gọi theo tên dù ID đổi.
 
-README của bản export `DATADOANNEW` ghi 11.668 ảnh; CSV clean ghi 11.672 cặp ảnh–nhãn (8.166 train, 2.335 valid và 1.171 test). Theo xác nhận của sinh viên, bốn cặp bị lỗi khi upload lên Roboflow. Số lượng export khớp với số clean sau khi trừ bốn cặp, nhưng chưa có log/tên file upload lỗi để đối chiếu định danh từng cặp.
+README của bản export `DATADOANNEW` ghi 11.668 ảnh. CSV clean được lưu trong bản tham chiếu ghi 11.672 cặp ảnh–nhãn (8.166 train, 2.335 valid và 1.171 test); đây là số liệu của bản clean, không phải thống kê độc lập từ thư mục train trên ổ C. Sinh viên xác nhận một số file lỗi khi upload, dẫn đến bản Roboflow tải về còn 11.668 ảnh; chưa có log/tên file để đối soát từng file lỗi.
 
 ### 3.2.3. Chia tập dữ liệu
 
-Các split Train/Valid/Test được giữ riêng trong các bước ghép dữ liệu; script lấy mẫu đèn xử lý từng split riêng, không chuyển ảnh qua lại. Tỷ lệ ảnh clean xấp xỉ 70%/20%/10%. Chưa xác minh được toàn bộ nguồn được chia theo clip/giao lộ, vì vậy không khẳng định độc lập theo camera hoặc không rò rỉ cảnh giữa các split.
+Theo script và CSV của bản clean tham chiếu, các split Train/Valid/Test được giữ riêng trong bước lấy mẫu dữ liệu đèn, không chuyển ảnh qua lại; tỷ lệ ảnh clean xấp xỉ 70%/20%/10%. Đây không phải phép kiểm kê độc lập dữ liệu export trên ổ C. Chưa xác minh được toàn bộ nguồn được chia theo clip/giao lộ, vì vậy không khẳng định độc lập theo camera hoặc không rò rỉ cảnh giữa các split.
 
 Thống kê số ảnh và bbox từng split trình bày tại Bảng 3.4.
 
@@ -1093,8 +1113,21 @@ README của export `DATADOANNEW` ghi auto-orientation và resize 640×640 kiể
 | Mosaic | 1,0; đóng mosaic 10 epoch cuối |
 | MixUp / CutMix | 0 / 0 |
 
-**Hình 3.4. Minh họa tiền xử lý ảnh trong export train và pipeline suy luận**
-*Cần bổ sung ảnh minh họa có nguồn: resize Stretch 640×640 theo README export; letterbox/crop ROI theo pipeline suy luận. Hai thao tác thuộc hai giai đoạn khác nhau, không dùng ảnh sơ đồ thay cho ảnh thực nghiệm.*
+**Hình 3.4. Sơ đồ phân biệt tiền xử lý dataset và ảnh suy luận**
+
+```mermaid
+flowchart LR
+    A[Ảnh dataset] --> B[Roboflow auto-orientation]
+    B --> C[Resize Stretch 640×640]
+    C --> D[Export YOLO dùng huấn luyện]
+    E[Frame video gốc] --> F[Letterbox giữ tỷ lệ về imgsz]
+    F --> G[YOLO phát hiện phương tiện]
+    G --> H[Ánh xạ bbox về tọa độ frame gốc]
+    E --> I[Crop ROI đèn]
+    I --> J[Letterbox ROI và YOLO phát hiện đèn]
+```
+
+*Sơ đồ thể hiện hai giai đoạn khác nhau theo README export và pipeline suy luận; không dùng resize Stretch của dataset để diễn giải cách tiền xử lý video lúc chạy.*
 
 ## 3.3. Huấn luyện mô hình phát hiện
 
@@ -1102,17 +1135,19 @@ Lần huấn luyện được đối chiếu trong báo cáo sử dụng dataset
 
 ### 3.3.1. Môi trường phần cứng và phần mềm
 
-Hồ sơ train xác nhận thiết bị `GPU 0`, đường dẫn dữ liệu, checkpoint khởi tạo và các tham số chạy. Không có bản ghi đủ tin cậy về model GPU cụ thể, VRAM, CPU, RAM, hệ điều hành hoặc phiên bản Python/PyTorch/CUDA của chính máy đã thực hiện lần train; cần lấy từ máy train hoặc log môi trường trước khi nộp.
+Hồ sơ train ghi `device: "0"` và nằm trong thư mục huấn luyện trên máy Windows. Khi đối chiếu trực tiếp môi trường hiện có ngày 16/11/2026, thư mục `Train` có virtual environment riêng với Python 3.11.9, PyTorch 2.5.1+cu121, CUDA runtime 12.1 và Ultralytics 8.4.198; CUDA khả dụng trên NVIDIA GeForce RTX 3050 Laptop GPU 4 GB. Máy lưu hồ sơ hiện báo CPU Intel Core i5-12500H, RAM khả dụng khoảng 15,7 GiB và Windows 11 Pro build 26200. Tuy nhiên, không có snapshot hệ điều hành/driver tại đúng thời điểm chạy train ngày 03/11/2026; các phiên bản phần mềm được đọc từ virtual environment hiện còn trong thư mục train, còn thông tin máy chủ được đọc từ máy hiện tại. Vì vậy, báo cáo ghi rõ nguồn và thời điểm đối chiếu, không khẳng định đây là log lịch sử độc lập.
 
-**Bảng 3.9. Môi trường thực nghiệm có thể xác minh**
+**Bảng 3.9. Môi trường máy lưu hồ sơ huấn luyện và virtual environment**
 
-| Thành phần | Thông tin có căn cứ | Thông tin cần bổ sung |
+| Thành phần | Thông tin đã đối chiếu | Nguồn/giới hạn |
 |---|---|---|
-| Thiết bị huấn luyện | GPU 0 theo `args.yaml` | Model GPU, VRAM |
-| CPU/RAM | Chưa có trong hồ sơ train | Cấu hình máy thực tế |
-| Hệ điều hành | Chưa có trong hồ sơ train | Phiên bản trên máy train |
-| Python/PyTorch/CUDA | Có file requirements trong project | Xác nhận phiên bản thực chạy |
-| Dữ liệu/model | `export-yolo26/data.yaml`, `yolo26s.pt` | Không cần bổ sung |
+| GPU | NVIDIA GeForce RTX 3050 Laptop GPU, VRAM 4 GB; `args.yaml` chọn GPU 0 | CUDA khả dụng; thông tin đọc trên máy hiện tại |
+| CPU/RAM | Intel Core i5-12500H; RAM khả dụng khoảng 15,7 GiB | Đọc từ hệ điều hành hiện tại |
+| Hệ điều hành | Windows 11 Pro, build 26200 | Không có bản ghi snapshot tại thời điểm train |
+| Python | 3.11.9 | Đọc từ `Train\.venv` |
+| PyTorch/CUDA | PyTorch 2.5.1+cu121; CUDA runtime 12.1 | Đọc từ `Train\.venv`; CUDA khả dụng |
+| Ultralytics | 8.4.198 | Đọc từ `Train\.venv` |
+| Dữ liệu/model | `export-yolo26/data.yaml`, khởi tạo `yolo26s.pt` | Xác nhận từ `args.yaml` |
 
 ### 3.3.2. Siêu tham số huấn luyện
 
@@ -1137,7 +1172,7 @@ Hồ sơ `args.yaml` ghi training script dùng `export-yolo26/data.yaml`, với 
 | Resume | False |
 | Dữ liệu | `datasets/export-yolo26/data.yaml` |
 
-Script `train.py` kiểm tra đúng class order trước khi train và thiết lập trọng số dương cho BCE theo lớp: bus 1,000; car 0,458; green 1,106; red 1,079; truck 0,881; yellow 1,476. Đây là trọng số loss, không phải hệ số confidence lúc suy luận. Việc sử dụng chúng trong báo cáo được mô tả theo mã train; nếu nộp bản cuối, nên kèm log train thể hiện dòng `[Custom BCE] pos_weight` để xác nhận đoạn monkeypatch đã được gọi trong lần chạy tạo checkpoint.
+Script `train.py` lưu trong thư mục Train kiểm tra class order và thay BCE loss bằng `BCEWithLogitsLoss` có `pos_weight`: bus 1,000; car 0,458; green 1,106; red 1,079; truck 0,881; yellow 1,476. Đây là trọng số loss, không phải confidence lúc suy luận. Script in dòng `[Custom BCE] pos_weight` khi hàm loss được khởi tạo. Tuy nhiên, trong hồ sơ lượt train hiện chỉ có `args.yaml`, `results.csv`, checkpoint và ảnh biểu đồ/batch; không tìm thấy log console gốc. Vì thế có thể xác nhận mã train được cấu hình để dùng trọng số này, nhưng chưa thể xác nhận bằng log rằng monkeypatch đã được gọi trong chính lượt tạo checkpoint. Báo cáo không xem riêng kết quả validation là bằng chứng cho việc trọng số đã được áp dụng.
 
 ### 3.3.3. Kết quả huấn luyện và validation
 
@@ -1183,7 +1218,9 @@ Các tệp chính:
 | `main.py` | Điểm vào ứng dụng CLI |
 | `Code/05_roi_config.py` | GUI cấu hình đa giác xe, đa giác đèn và vạch |
 | `Code/06_run_detection.py` | Pipeline suy luận, ByteTrack, đèn, giao cắt và ghi kết quả |
-| `tracker/` | Triển khai ByteTrack tự cài, association, lifecycle, stitching và preset |
+| `tracking/custom_bytetrack/` | Triển khai ByteTrack tự cài, association, lifecycle, stitching và preset |
+| `tracking/reid/` | Trích xuất và so sánh histogram màu HSV |
+| `tracking/ultralytics_tracker/` | Adapter gọi ByteTrack tích hợp của Ultralytics |
 | `scripts/run_ablation.py` | Chạy tuần tự các preset A–F trên CPU và tổng hợp kết quả |
 | `project_paths.py` | Các đường dẫn project dùng chung |
 | `web_app.py` | API và giao diện web cục bộ |
@@ -1191,24 +1228,24 @@ Các tệp chính:
 | `web/` | HTML, CSS, JavaScript cho ứng dụng VIA |
 | `config/roi_config.json` | ROI của video mẫu trên máy |
 | `models/best.pt` | Checkpoint dùng mặc định trong project |
-| `C:\Users\ADMIN\Downloads\DATA\XuLyData\Final_cleaned\` | Dataset clean trên máy và báo cáo thống kê |
+| `TRAIN_DATA_ROOT\Final_cleaned\` | Dataset clean trên máy và báo cáo thống kê |
 
 ### 3.4.2. Cài đặt các module chính
 
-Các module được phân vai trong Bảng 3.12. Pipeline inference dùng chung cho CLI và web; `web_app.py`/`web_worker.py` xử lý phiên web, còn `tracker/` cung cấp backend ByteTrack tự cài và các tùy chọn mở rộng.
+Các module được phân vai trong Bảng 3.12. Pipeline inference dùng chung cho CLI và web; `web_app.py`/`web_worker.py` xử lý phiên web, còn `tracking/` cung cấp adapter Ultralytics, backend ByteTrack tự cài và đặc trưng appearance.
 
-CLI mặc định dùng `models/best.pt`, CPU, ByteTrack Ultralytics và `config/roi_config.json`; có thể chọn tracker tự cài bằng `--tracker bytetrack`. Giao diện web dùng `models/best.pt`, GPU CUDA 0 và mặc định là ByteTrack Ultralytics; có thể đổi tracker trong phần cấu hình riêng của job. Các tham số CLI gồm `--weights`, `--video`, `--config`, `--device`, `--imgsz`, `--light-conf`, `--vehicle-conf` và `--track-conf`. Nếu không chỉ định `--track-conf`, Ultralytics dùng giá trị nhỏ hơn giữa `light_conf` và `vehicle_conf`, còn tracker tự cài dùng 0,1. Ngưỡng `vehicle_conf` lọc bước xét quỹ đạo/sự kiện, không ẩn hộp track hợp lệ trong ROI.
+CLI mặc định dùng `models/best.pt`, CPU, ByteTrack Ultralytics và `config/roi_config.json`; có thể chọn tracker tự cài bằng `--tracker bytetrack`. Giao diện web dùng `models/best.pt`, GPU CUDA 0 và mặc định chọn ByteTrack tự cài với appearance ReID; có thể đổi sang Ultralytics trong cấu hình job. Các tham số CLI gồm `--weights`, `--video`, `--config`, `--device`, `--imgsz`, `--light-conf`, `--vehicle-conf` và `--track-conf`. Nếu không chỉ định `--track-conf`, Ultralytics dùng giá trị nhỏ hơn giữa `light_conf` và `vehicle_conf`, còn tracker tự cài dùng 0,1. Ngưỡng `vehicle_conf` lọc bước xét quỹ đạo/sự kiện, không ẩn hộp track hợp lệ trong ROI.
 
 
 **Phần việc tự thực hiện và nội dung kế thừa.**
 
 Phần sinh viên trực tiếp thực hiện theo thông tin và hiện vật của dự án:
 
-1. Tìm kiếm và thu thập ảnh từ video CCTV giao thông và CCTV công khai; tự gán nhãn hơn hai nghìn ảnh giao thông bằng Roboflow.
-2. Kết hợp dữ liệu NhanDienGiaoThong và KLTN-vehicles; loại lớp xe máy ngoài phạm vi, chuẩn hóa nhãn theo tên, rồi bổ sung Bus và Truck do số mẫu hai lớp này còn ít.
-3. Chọn khoảng một nửa dữ liệu đèn theo split và phân bố class-combination, remap sang bộ sáu lớp.
-4. Xây dựng và chạy bước kiểm tra nhãn YOLO, loại bỏ dòng sai định dạng, bỏ cặp không còn bbox hợp lệ, giữ các bbox nhỏ hợp lệ và xuất báo cáo thống kê.
-5. Đưa dữ liệu đã xử lý lên project Roboflow `DATADOANNEW` làm nơi lưu trữ, tải export-yolo26 để huấn luyện; đối chiếu thứ tự lớp theo tên và điều chỉnh mã train để kiểm tra class order, thiết lập trọng số loss theo lớp.
+1. Tìm, cắt và gán nhãn 2.078 ảnh CCTV từ một số tỉnh miền Nam và Đà Nẵng trên YouTube bằng Roboflow; áp dụng lật ngang (flip H) để tăng dữ liệu, với 732 ảnh flip được kiểm đếm theo tên file trong các split train/valid/test; resize 640×640.
+2. Ghép với 2.310 ảnh `KLTN-vehicles`, tạo project `NhanDienGiaoThong.3i.yolo11` có hơn 4.300 ảnh; sau đó bổ sung dữ liệu Bus và Truck.
+3. Ghép khoảng một nửa bộ Traffic Light Detection từ Roboflow để tạo bộ sáu lớp `Final Merge`, rồi clean thành `Final Cleaned`.
+4. Tải bộ đã clean lên Roboflow `DATADOANNEW`; một số file tải lên lỗi nên phiên bản còn 11.668 ảnh. Tải phiên bản này vào thư mục `Train` trên ổ C để huấn luyện; các bản dataset trong repository ổ D chỉ dùng tham chiếu/minh họa.
+5. Đối chiếu thứ tự lớp theo tên và điều chỉnh mã train để kiểm tra class order, thiết lập trọng số loss theo lớp.
 6. Tích hợp checkpoint vào pipeline phát hiện, ROI, logic trạng thái đèn, giao cắt vạch và lưu bằng chứng; triển khai thêm baseline ByteTrack bằng NumPy/SciPy và công cụ đối chiếu hai tracker.
 7. Xây dựng giao diện cục bộ để cấu hình, chọn tracker, theo dõi, xem và rà soát kết quả.
 
@@ -1230,7 +1267,7 @@ Phần kế thừa gồm kiến trúc và trọng số khởi tạo YOLO, API YO
 
 ### 3.4.3. Giao diện hệ thống
 
-Giao diện web có luồng tải video, cấu hình ROI/vạch, lựa chọn các mục tùy chọn, tiến độ xử lý, xem đầu ra và rà soát sự kiện. CLI cho phép chạy pipeline theo tham số dòng lệnh và công cụ ROI riêng. Ảnh chụp giao diện cần bổ sung tại Hình 2.13.
+Giao diện web có luồng tải video, cấu hình ROI/vạch, lựa chọn các mục tùy chọn, tiến độ xử lý, xem đầu ra và rà soát sự kiện. CLI cho phép chạy pipeline theo tham số dòng lệnh và công cụ ROI riêng. Hồ sơ hiện có video đầu ra và ảnh bằng chứng theo job, nhưng chưa lưu ảnh chụp riêng của giao diện.
 
 
 
@@ -1238,16 +1275,16 @@ Giao diện web có luồng tải video, cấu hình ROI/vạch, lựa chọn c�
 
 ### 3.5.1. Kiểm thử đơn vị và kiểm thử chức năng
 
-Trong mã nguồn có các kiểm thử đơn vị cho parser/cấu hình, detector, association, lifecycle, geometry, stitching, preset, API web, worker và các mục giao diện. Không có báo cáo tổng hợp kết quả chạy test được lưu cùng lần audit này; số lượng test pass phải được chạy lại trên môi trường chuẩn trước khi đưa vào báo cáo.
+Trong mã nguồn có các kiểm thử đơn vị cho parser/cấu hình, detector, association, lifecycle, geometry, stitching, preset, API web, worker và giao diện. Lần xác minh ngày 15/11/2026 chạy `.\.venv\Scripts\python.exe -m unittest discover -s tests -v` đạt 52/52 kiểm thử Python; `npm run test:ui` đạt 11/11 kiểm thử giao diện. Đây là kết quả kiểm thử hồi quy trên workspace tại ngày chạy, không phải đánh giá độ chính xác phát hiện vi phạm.
 
 **Bảng 3.14. Phạm vi kiểm thử phần mềm**
 
-| Nhóm | Nội dung kiểm thử | Kết quả cần ghi khi chạy lại |
+| Nhóm | Nội dung kiểm thử | Trạng thái |
 |---|---|---|
-| Pipeline detection | Lọc ROI/confidence, giao cắt, đầu ra | Cần chạy test suite |
-| Tracker tự cài | Association, Kalman, lifecycle, stitching, preset | Cần chạy test suite |
-| Web/API/worker | Lưu cấu hình, truyền tracker, tiến độ và job | Cần chạy test suite |
-| UI | Bốn mục thu gọn độc lập và lựa chọn tracker | Cần chạy test suite |
+| Pipeline detection | Lọc ROI/confidence, giao cắt, đầu ra | Có trong bộ 52 kiểm thử Python; toàn bộ đạt |
+| Tracker tự cài | Association, Kalman, lifecycle, stitching, preset | Có trong bộ 52 kiểm thử Python; toàn bộ đạt |
+| Web/API/worker | Lưu cấu hình, truyền tracker, tiến độ và job | Có trong bộ 52 kiểm thử Python; toàn bộ đạt |
+| UI | Các luồng tương tác và lựa chọn tracker | 11/11 kiểm thử giao diện đạt |
 
 ### 3.5.2. Kiểm tra tính đúng đắn của bộ theo dõi
 
@@ -1257,7 +1294,7 @@ Phép kiểm tra baseline đã lưu trước đây báo cáo hai chế độ cho
 
 ### 3.6.1. Bộ video thử nghiệm
 
-Các lần chạy dưới đây là lượt xử lý phần mềm, không phải video có ground truth. Video mẫu có số liệu summary được lưu trong `Output/`; Test 6 có nhiều job lịch sử với ROI/ngưỡng khác nhau; smoke A–F chỉ xử lý 30 frame.
+Các lần chạy dưới đây là lượt xử lý phần mềm. Ground truth Test 6 mới được bổ sung ngày 15/11/2026; các job cũ không mặc nhiên dùng cùng checkpoint/ROI/ngưỡng với ground truth. Smoke A–F chỉ xử lý 30 frame.
 
 **Bảng 3.15. Bộ video và vai trò các lần chạy được lưu**
 
@@ -1265,58 +1302,110 @@ Các lần chạy dưới đây là lượt xử lý phần mềm, không phải
 |---|---:|---|---|---|
 | `samples/video.mp4` | 950 | GPU 0 | Kiểm tra đầu ra pipeline mẫu | Không có |
 | `Test 6.mp4`, job ngày 03/11/2026 | 1.771 | GPU 0 | Kết quả lịch sử, checkpoint không còn | Không có |
-| `Test 6.mp4`, job ngày 09/11/2026 | 1.771 | GPU 0 | Lượt web dùng `models/best.pt` | Không có |
+| `Test 6.mp4`, job web ngày 09/11/2026 | 1.771 | GPU 0 | Kết quả lịch sử dùng `models/best.pt` | Có ba nhãn sự kiện dương tính; chưa có xác nhận trực quan cho lượt này |
+| `Test 6.mp4`, chạy CLI ngày 15/11/2026 | 1.771 | GPU 0 | Kết quả lịch sử trước appearance ReID | Có ba nhãn sự kiện dương tính; chưa có xác nhận trực quan riêng cho lượt này |
 | Smoke A–F | 30 mỗi preset | CPU | Kiểm tra pipeline có chạy hết | Không có |
+| `test_videos/ground_truth/test6_violation_events.json` | 1.771 | — | Ba sự kiện dương tính được chép từ bảng XLSX đã ghi trong báo cáo | Dùng làm ground truth giới hạn; chưa đủ nhãn âm tính/track |
+
+Các job web đã được người dùng xem lại trực quan và đánh giá sơ bộ là khá ổn. Những lượt có đủ metadata xác nhận dùng tracker tự cài được tổng hợp dưới đây; `center` là điểm tâm bbox, còn ROI/vạch được cấu hình riêng theo từng video.
+
+**Bảng 3.15a. Các lượt kiểm thử web dùng tracker tự cài và điểm tâm bbox**
+
+| Video/job đã lưu | Kích thước; frame xử lý | Cấu hình theo dõi | Track/object duy nhất | Sự kiện AI (frame được ghi) | FPS |
+|---|---|---|---:|---|---:|
+| Test 6 Demo che khuất, job `79c15e908a3f4e3ca2c61254ac49f3c0` | 1542×1080; 1771/1771 | ByteTrack tự cài, `center`, `track_conf=0,1`, directional gating bật; ReID không được ghi trong artifacts | 30 track | 3 (227, 315, 1327) | 10,58 |
+| Test 6 Demo che khuất, job `8c897bd0952d4910a83b0c5945f15075` | 1542×1080; 1771/1771 | ByteTrack tự cài, `center`, `track_conf=0,1`, ReID bật (`track_buffer=60`, `reid_window=60`), directional gating bật | 39 track / 33 object | 3 (233, 329, 1328) | 10,82 |
+| Test 7, job `596cfc7e51db46a08e40e30da26228f0` | 886×618; 2163/2163 | ByteTrack tự cài, `center`, `track_conf=0,1`, ReID bật, directional gating bật | 36 track / 29 object | 1 (1370) | 12,81 |
+| Test 8, job `ba2cf850cf254b948d4fb76c9aa3dc8b` | 886×608; 2424/2424 | ByteTrack tự cài, `center`, `track_conf=0,1`, ReID bật, directional gating bật | 29 track / 21 object | 0 | 12,70 |
+
+Các số sự kiện là đầu ra của từng job, không phải số vi phạm đã được xác nhận. Hai job Test 6 Demo dùng cùng video nguồn nhưng cấu hình khác nhau nên không dùng chênh lệch số track/FPS để kết luận ReID tốt hơn. Test 6 Demo có kích thước và SHA-256 khác video `test_videos/Test 6.mp4` trong ground truth; không ghép các nhãn frame 221/317/1304 vào video Demo. Test 7 và Test 8 chưa có ground truth sự kiện. Toàn bộ job giữ `input.mp4`, `config.json`, `summary.json` và video kết quả trong thư mục `.webdata/jobs/<job-id>/`, cho phép xem lại đầu ra và cấu hình.
+
+Các job hoàn tất Test 1–4 cũng còn `summary.json` và video kết quả: Test 1 (2768 frame, 10,74 FPS, 82 track), Test 2 (2176, 11,30 FPS, 17 track), Test 3 (2346, 13,54 FPS, 17 track) và Test 4 (2372, 13,80 FPS, 25 track); mỗi summary ghi 0 sự kiện AI. Tuy nhiên, các artifacts này không ghi tracker và `GROUND_POINT_MODE`, nên chỉ được xem là lịch sử chạy pipeline, không gộp vào kết quả xác nhận ByteTrack tự cài + `center`. Thư mục Test 5 hiện chỉ có video tải lên, poster và trạng thái job, chưa có summary/video kết quả hoàn tất.
 
 ### 3.6.2. Gán nhãn ground truth cấp sự kiện vi phạm
 
-Hiện chưa có bộ ground truth cấp sự kiện hoặc tracking được lưu trong dự án; vì vậy không thể tính TP, FN, FP, precision/recall/F1 sự kiện hay HOTA/IDF1/MOTA. Để hoàn thiện thí nghiệm, cần gán nhãn độc lập trên từng video: mã video, thời điểm/frame bắt đầu và giao cắt, ID phương tiện, trạng thái đèn tại thời điểm giao cắt, kết quả sự kiện (vi phạm/không vi phạm/không xác định) và ghi chú trường hợp bị che khuất. Chia train/validation/test theo clip hoặc camera để tránh các khung gần nhau lọt vào nhiều tập. Hai người gán có thể được dùng để kiểm tra nhất quán; tỷ lệ đồng thuận chỉ được báo cáo sau khi thực sự đo và xử lý bất đồng.
+Bảng sự kiện độc lập của Test 6 ghi ba lần xe đi hướng `up` qua vạch khi đèn `red`, tại các frame 221, 317 và 1304; các mã track trong XLSX lần lượt là 9, 11 và 22. Người dùng đã xác nhận cho phép dùng ba nhãn sự kiện này làm ground truth. Các nhãn đã được chuẩn hóa vào `test_videos/ground_truth/test6_violation_events.json`; SHA-256 trong file xác nhận video là `test_videos/Test 6.mp4` (886 × 620, 1.771 frame).
 
-**Tình trạng hiện tại:** các video trong Bảng 3.15 đều chưa có ground truth; nội dung trên là quy trình cần thực hiện, không phải kết quả đã đo.
+Gói nguồn `GROUND_TRUTH_TRAFFIC_VIDEO_01/` và workbook gốc hiện không có trong workspace; file JSON được chép lại từ số liệu đã ghi trong báo cáo. Quy ước đánh số frame 0-based hay 1-based chưa thể đối chiếu lại với XLSX; các mã track XLSX (9, 11, 22) cũng chưa được ánh xạ xác nhận sang ID CVAT XML. Tuy vậy, người dùng đã xem trực tiếp video của lượt chạy bổ sung và xác nhận ba sự kiện hệ thống đều tương ứng với ba sự kiện đã gán nhãn; chênh lệch frame đến từ thời điểm giao cắt theo ROI/vạch cấu hình. Ground truth vẫn chỉ có ba sự kiện dương tính, chưa rà hết các đoạn không vi phạm và chưa gồm nhãn đầy đủ trạng thái đèn/toàn bộ track.
+
+Người dùng đã đối chiếu trực quan lượt bổ sung với video và xác nhận ba sự kiện phát hiện đều tương ứng với ba sự kiện dương tính trong nhãn. Kết quả hỗ trợ xác nhận đúng ba trường hợp này dù frame giao cắt khác nhau do cấu hình ROI/vạch. Tuy nhiên, ground truth chưa rà hết các đoạn không có sự kiện, do đó chưa đủ để tính precision/recall, FP/FN toàn video hoặc HOTA/IDF1/MOTA.
 
 ### 3.6.3. Các chỉ số đánh giá (phát hiện, theo dõi, cấp sự kiện)
 
-Detector có Precision, Recall, mAP50 và mAP50–95 trên validation như Bảng 3.11. Đánh giá tracking cần HOTA, IDF1, MOTA, IDSW và nhãn ID theo frame; đánh giá vi phạm cần phân loại sự kiện đúng, bỏ sót, báo giả và trùng. Các nhãn ground truth tương ứng chưa có trong dự án nên những chỉ số này chưa thể tính. FPS là tốc độ xử lý của từng lần chạy, không phải thước đo độ chính xác.
+Detector có Precision, Recall, mAP50 và mAP50–95 trên validation như Bảng 3.11. Trong lượt Test 6 bổ sung, người dùng xác nhận trực quan cả ba sự kiện dương tính được hệ thống phát hiện. Vì ground truth chưa rà hết các đoạn không có sự kiện và chưa có nhãn ID theo toàn bộ frame, chưa thể tính precision/recall, FP/FN toàn video hoặc HOTA/IDF1/MOTA/IDSW. FPS là tốc độ xử lý của từng lần chạy, không phải thước đo độ chính xác.
 
 **Bảng 3.16. Chỉ số có thể báo cáo và tình trạng dữ liệu**
 
 | Cấp đánh giá | Chỉ số | Tình trạng |
 |---|---|---|
 | Detector | Precision, Recall, mAP50, mAP50–95 | Có trên validation; chưa có báo cáo test độc lập |
-| Tracking | HOTA, IDF1, MOTA, IDSW | Chưa tính; thiếu ground truth MOT |
-| Sự kiện | TP, FN, FP, trùng, precision, recall | Chưa tính; thiếu nhãn sự kiện chuẩn |
+| Tracking | HOTA, IDF1, MOTA, IDSW | Chưa tính; cần xác nhận ID và hoàn thiện nhãn |
+| Sự kiện | TP, FN, FP, trùng, precision, recall | Lượt bổ sung Test 6: 3/3 sự kiện dương tính được người dùng xác nhận trực quan; chưa đủ nhãn âm tính để tính chỉ số toàn video |
 | Tốc độ | FPS, thời gian xử lý, số frame | Có cho một số job; phải gắn với cấu hình cụ thể |
 
-`Output/summary.json` và `Output/RUN_REPORT.md` lưu kết quả chạy trên video mẫu:
+`Output/summary.json` và `Output/RUN_REPORT.md` lưu lần chạy CLI trước khi bật appearance ReID; `Output/` được giữ nguyên và không đại diện cho lượt ReID cuối:
 
-**Bảng 3.17. Kết quả lần chạy video mẫu**
+**Bảng 3.17. Kết quả CLI Test 6 trước ReID, ngày 15/11/2026**
 
 | Chỉ số | Giá trị ghi nhận |
 |---|---:|
-| Độ phân giải | 2568 × 1440 |
+| Độ phân giải | 886 × 620 |
 | FPS nguồn | 30 |
-| Tổng frame / đã xử lý | 950 / 950 |
-| Thời lượng video | 31,67 giây |
+| Tổng frame / đã xử lý | 1.771 / 1.771 |
+| Thời lượng video | 59,03 giây |
 | Thiết bị | GPU 0 |
-| Thời gian xử lý | 82,69 giây |
-| Tốc độ trung bình | 11,49 FPS |
-| ID phương tiện duy nhất | 7 |
-| Frame phát hiện đỏ / xanh / vàng | 646 / 303 / 0 |
-| Trạng thái đỏ / xanh / unknown | 647 / 301 / 2 |
-| Sự kiện được ghi nhận | 0 |
+| Thời gian xử lý | 68,50 giây |
+| Tốc độ trung bình | 25,86 FPS |
+| ID phương tiện duy nhất | 19 |
+| Frame phát hiện đỏ / xanh / vàng | 565 / 425 / 90 |
+| Trạng thái đỏ / xanh / vàng / unknown | 961 / 718 / 90 / 2 |
+| Sự kiện được ghi nhận | 3 |
 
-Lệnh tái tạo lần chạy theo báo cáo hiện có:
+Lệnh đã dùng cho lượt chạy này:
 
 ```powershell
 .\.venv\Scripts\python.exe -X utf8 .\main.py `
   --weights .\models\best.pt `
-  --video .\samples\video.mp4 `
-  --config .\config\roi_config.json `
+  --video ".\test_videos\Test 6.mp4" `
+  --config .\config\roi_config.sample.json `
   --output .\Output `
   --device 0 --headless
 ```
 
-Kết quả không có sự kiện không chứng minh video không có vi phạm; cần có nhãn chuẩn độc lập và kiểm tra ảnh/video để kết luận. Video này cũng không phải `Test 6.mp4`.
+Ba sự kiện AI được ghi tại frame 233, 329 và 1333. Ground truth ghi các frame 221, 317 và 1304; sai khác lần lượt là +12, +12 và +29 frame. Người dùng đã xác nhận khi xem video rằng cả ba sự kiện đều đúng; vị trí cấu hình ROI/vạch ảnh hưởng đến frame hệ thống ghi nhận giao cắt. Đây là xác nhận trực quan cho ba sự kiện có nhãn, không đủ để xác định các sự kiện bị bỏ sót hoặc tính precision/recall toàn video.
+
+Lượt chạy ReID cuối được lưu riêng tại `.webdata/reid-validation-test6-20261115-final/summary.json`, không ghi đè `Output/`:
+
+**Bảng 3.17a. Kết quả Test 6 khi bật appearance ReID, ngày 15/11/2026**
+
+| Chỉ số | Giá trị ghi nhận |
+|---|---:|
+| Tổng frame / đã xử lý | 1.771 / 1.771 |
+| Thời gian xử lý | 72,65 giây |
+| Tốc độ trung bình | 24,38 FPS |
+| Tracker / ngưỡng detection | ByteTrack tự cài / 0,1 |
+| Track / object ID duy nhất | 29 / 23 |
+| Sự kiện AI | 3 |
+| Định danh xe xanh | `object_id=1`, các `track_id` 1, 65, 67 |
+| Phương pháp / điểm hai lần nối | `hsv_reid` / 0,877 và 0,624 |
+
+Đây là kết quả chức năng trên một video, không phải đánh giá định lượng độ chính xác. Chưa có ground truth được đối chiếu với lượt này.
+
+**Bảng 3.17b. Lượt đối chiếu bổ sung trên video Test 6 có ground truth, ngày 16/11/2026**
+
+| Chỉ số | Giá trị ghi nhận |
+|---|---:|
+| Video / SHA-256 | `test_videos/Test 6.mp4` / `b1acbe9e2959b2b58f1a45a73778505713da1d7b5cf3ddb7c3051d8f90c35b82` |
+| Checkpoint / SHA-256 | `models/best.pt` / `507b5d3ccbad663b780a120d275329f9367053d4500c4e2a918298539f9fb6ce` |
+| Tổng frame / đã xử lý | 1.771 / 1.771 |
+| Tracker / điểm vượt vạch | ByteTrack tự cài, `track_conf=0,1` / tâm bbox (`center`) |
+| Appearance ReID | Bật; `track_buffer=60`, `reid_window=60` |
+| Track / object ID duy nhất | 18 / 18 |
+| Thời gian / tốc độ xử lý | 75,93 giây / 23,32 FPS |
+| Sự kiện AI | 3, tại frame 233, 329, 1333 |
+| Đầu ra | `Output/report_test6_custom_center_reid_20261116/summary.json` và `annotated.mp4` |
+
+Ground truth ghi frame 221, 317 và 1304; hệ thống ghi frame giao cắt lần lượt là 233, 329 và 1333, chênh +12, +12 và +29 frame. Sau khi xem video kết quả, người dùng xác nhận cả ba sự kiện đều đúng; độ lệch thời điểm phụ thuộc vị trí ROI/vạch được cấu hình và thời điểm điểm tâm bbox được xác định là đã qua vạch. Vì vậy, ở phạm vi ba sự kiện dương tính đã có nhãn, lượt này khớp trực quan 3/3 sự kiện. Đây không phải phép đo precision/recall toàn video: ground truth chưa rà hết các đoạn không có sự kiện và chưa có nhãn ID MOT đầy đủ. Lượt này chạy bằng virtual environment của project hiện tại; không dùng để thay thế số liệu huấn luyện hoặc các job web người dùng đã rà soát.
 
 #### Lượt chạy Test 6 và khả năng tái lập
 
@@ -1369,7 +1458,7 @@ Cấu hình thử không có `QUEUE_ZONE_POLYGON`; E/F phát cảnh báo và kh�
 
 ### 3.8.1. Kết quả tổng thể
 
-Các con số dưới đây là số sự kiện AI sinh ra, không phải số vi phạm đúng. Không có nhãn chuẩn để phân loại sự kiện đúng, bỏ sót, báo giả hoặc trùng.
+Các con số dưới đây là số sự kiện AI sinh ra. Người dùng đã rà soát trực quan các video job Test 6 Demo, Test 7 và Test 8; đây là kiểm tra định tính, không phải gán nhãn đầy đủ. Ba sự kiện dương tính trong ground truth thuộc `test_videos/Test 6.mp4` 886×620; người dùng đã xác nhận trực quan cả ba sự kiện của lượt bổ sung trên video này. Chưa rà hết sự kiện âm tính hoặc gán track ID đầy đủ, nên không thể tính TP/FN/FP, precision/recall hoặc độ chính xác tổng thể từ ba nhãn này.
 
 **Bảng 3.20. Số sự kiện AI ghi nhận và giới hạn xác minh**
 
@@ -1377,23 +1466,38 @@ Các con số dưới đây là số sự kiện AI sinh ra, không phải số 
 |---|---:|---|---|---|
 | Video mẫu 950 frame | 0 | Chưa xác minh | Chưa xác minh | Chưa xác minh |
 | Test 6 job web 09/11/2026 | 3 | Chưa xác minh | Chưa xác minh | Chưa xác minh |
+| Test 6 Demo web, job ReID 15/11/2026 | 3 | Người dùng đã xem trực quan; chưa có ground truth cho video Demo | Chưa xác minh | Chưa xác minh |
+| Test 7 web, job 16/11/2026 | 1 | Người dùng đã xem trực quan; chưa có ground truth | Chưa xác minh | Chưa xác minh |
+| Test 8 web, job 16/11/2026 | 0 | Không có sự kiện AI; chưa có ground truth để xác định bỏ sót | Chưa xác minh | Chưa xác minh |
+| Test 6 CLI 15/11/2026, trước ReID | 3 | Chưa xác minh; frame gần nhãn nhưng ID cần đối chiếu | Chưa xác minh | Chưa xác minh |
+| Test 6 ReID cuối 15/11/2026 | 3 | Chưa xác minh; object/track ID chưa đối chiếu ground truth | Chưa xác minh | Chưa xác minh |
+| Test 6 ByteTrack tự cài + center, chạy bổ sung 16/11/2026 | 3 | 3/3 sự kiện có nhãn được người dùng xác nhận đúng qua video; thời điểm lệch +12, +12, +29 frame | Chưa xác minh toàn video | Chưa xác minh toàn video |
 | Test 6 job lịch sử 03/11/2026 | 3 | Chưa xác minh | Chưa xác minh | Chưa xác minh |
 
+**Đối chiếu các lượt cũ:** nhãn sự kiện ghi frame 221, 317, 1304; lượt CLI trước ReID ghi 233, 329, 1333 và lượt ReID ngày 15/11 ghi 227, 315, 1329. Người dùng xác nhận cả ba sự kiện trong lượt chạy bổ sung tại Bảng 3.17b đều đúng; xác nhận này không tự động áp dụng cho các lượt cũ có cấu hình/đầu ra khác. Không suy ra độ chính xác tracking từ việc `object_id` được giữ qua các đoạn track.
+
+Trong lượt ReID cuối, object xe xanh `object_id=1` liên kết các `track_id` 1, 65 và 67; hai lần ghép lại dùng `hsv_reid`, có điểm lần lượt khoảng 0,877 và 0,624. Đây là bằng chứng chức năng trên một video cụ thể, không phải độ chính xác định lượng hay xác nhận ground truth.
 
 **Hình 3.9. Sự kiện điển hình: khung toàn cảnh và ảnh crop phương tiện**
-*Cần lấy từ job Test 6 đã chọn, kiểm tra lại frame/sự kiện và làm mờ biển số trước khi đưa vào báo cáo.*
+![Ảnh crop sự kiện AI ứng viên trong lượt Test 6 ReID](figures/test6_event_evidence.png)
 
-**Hình 3.10. Quỹ đạo một track qua vạch, có chú thích ID và trạng thái đèn**
-*Cần dựng từ `tracks.txt` và video đầu ra; chưa có hình quỹ đạo đã lưu.*
+*Nguồn: đầu ra job Test 6 ReID ngày 15/11/2026. Đây là sự kiện AI đề xuất, chưa được xác nhận là vi phạm theo ground truth; biển số đã được che. Dòng chữ “DEMO CHE KHUẤT XE” là watermark có sẵn trong video nguồn, không phải kết quả nhận dạng của hệ thống.*
 
-**Hình 3.11. Ví dụ nối track đúng và tình huống nối nhầm (nếu có)**
-*Chưa có trường hợp nối thực tế thỏa ngưỡng trong video Test 6; không tạo hình minh họa như thể là kết quả đã quan sát.*
+**Hình 3.10. Quỹ đạo tâm bbox của `object_id=1` và vạch dừng cấu hình**
+![Quỹ đạo các track được liên kết với object_id 1 trên mặt phẳng pixel](figures/test6_track_trajectory.png)
 
-Mã nguồn hiện không ghi tệp `stitches.csv`; thông tin nối track được ghi log khi có thao tác nối. Do đó chưa thể lập bảng nhật ký nối từ `stitches.csv` như đề cương gợi ý; cần bổ sung xuất log có cấu trúc nếu nội dung này là yêu cầu nghiệm thu.
+*Nguồn: `object_tracks.csv` và `config.json` của job Test 6 ReID. Hình biểu diễn tọa độ pixel và các ID track được hệ thống liên kết; không phải ground truth MOT.*
+
+**Hình 3.11. Chuỗi ReID của `object_id=1` qua các `track_id`**
+![Các frame minh họa object_id 1 được liên kết qua track_id 1, 65 và 67](figures/test6_reid_track_sequence.png)
+
+*Nguồn: video đầu ra và `object_tracks.csv` của lượt ReID cuối. Biển số được che; chuỗi này minh họa hoạt động của thuật toán trên một xe, không chứng minh độ chính xác tổng quát.*
+
+Mã nguồn không ghi tệp `stitches.csv`. Kết quả hiện lưu quan hệ định danh trong `object_tracks.csv` theo từng frame và liệt kê các `identity_track_ids` trong sự kiện của `violations.csv`/`summary.json`; có thể dùng các trường này làm nhật ký nối, nhưng chưa có đánh giá tự động đúng/sai bằng ground truth.
 
 ### 3.8.2. Giới hạn đánh giá theo điều kiện video
 
-Chưa có nhãn chuẩn và metadata đủ để phân nhóm kết quả theo ngày/đêm, mật độ xe hoặc góc quay. Không thể suy ra tỷ lệ đúng theo điều kiện chỉ từ số sự kiện do hệ thống sinh ra. Trước khi báo cáo mục này, cần gán nhãn ground truth, cố định checkpoint/ROI/ngưỡng và ghi điều kiện cho từng clip; nếu không có clip thuộc một nhóm thì ghi rõ “chưa có dữ liệu”, không ngoại suy.
+Ground truth Test 6 mới chưa kèm metadata đủ để phân nhóm kết quả theo ngày/đêm, mật độ xe hoặc góc quay và chưa được xác nhận ID/frame. Không thể suy ra tỷ lệ đúng theo điều kiện chỉ từ số sự kiện AI. Muốn báo cáo theo nhóm, cần chuẩn hóa nhãn, cố định checkpoint/ROI/ngưỡng và ghi metadata cho từng clip; nếu thiếu mẫu của nhóm nào thì ghi rõ “chưa có dữ liệu”, không ngoại suy.
 
 - Ngày/đêm: chưa có thống kê theo clip và nhãn sự kiện.
 - Mật độ phương tiện: chưa có ngưỡng phân nhóm hoặc số liệu đối chiếu.
@@ -1413,9 +1517,13 @@ Chưa có sweep tham số trên tập validation có ground truth. Các ngưỡn
 | `stitch_distance_threshold` | 80 px | Chưa thực hiện |
 | `stitch_histogram_threshold` | 0,55 | Chưa thực hiện |
 | `stitch_score_threshold` | 0,65 | Chưa thực hiện |
+| `reid_window` | 60 frame | Chưa thực hiện |
+| `reid_distance_threshold` | 80 px ảnh gốc | Chưa thực hiện |
+| `reid_histogram_threshold`, `reid_match_threshold` | 0,60; 0,60 | Chưa thực hiện |
+| `reid_score_margin` | 0,08 | Chưa thực hiện |
 
-**Hình 3.12. Độ nhạy theo BIoU, max_age_red và ngưỡng stitch**
-*Chỉ bổ sung sau khi chạy sweep với validation có ground truth; hiện chưa có dữ liệu để vẽ.*
+**Hình 3.12. Độ nhạy theo BIoU, max_age_red, stitch và ReID**
+*Chỉ bổ sung sau khi chạy sweep với validation có ground truth; hiện các ngưỡng ReID là cấu hình khởi đầu, chưa được tối ưu.*
 
 ## 3.9. Tốc độ xử lý và khả năng triển khai
 
@@ -1423,8 +1531,14 @@ Chưa có sweep tham số trên tập validation có ground truth. Các ngưỡn
 
 | Lượt chạy | Thiết bị | FPS | Ghi chú |
 |---|---|---:|---|
-| Video mẫu, 950 frame | GPU 0 | 11,49 | Pipeline project hiện hành |
+| Test 6 ReID cuối 15/11/2026 | GPU 0 | 24,38 | 1.771/1.771 frame; 72,65 giây; 29 track, 23 object |
+| Test 6 CLI 15/11/2026, trước ReID | GPU 0 | 25,86 | Kết quả lịch sử; 1.771 frame |
 | Test 6 job web 09/11/2026 | GPU 0 | 10,95 | 1.771 frame, Ultralytics |
+| Test 6 ByteTrack tự cài + center, chạy bổ sung 16/11/2026 | GPU 0 | 23,32 | 1.771 frame; ReID bật; xem Bảng 3.17b |
+| Test 6 Demo web, job `79c15e908a3f4e3ca2c61254ac49f3c0` | GPU 0 | 10,58 | 1.771 frame; tracker tự cài, center; ReID không được ghi trong artifacts |
+| Test 6 Demo web, job `8c897bd0952d4910a83b0c5945f15075` | GPU 0 | 10,82 | 1.771 frame, tracker tự cài, center, appearance ReID |
+| Test 7 web, job `596cfc7e51db46a08e40e30da26228f0` | GPU 0 | 12,81 | 2.163 frame, tracker tự cài, center, appearance ReID |
+| Test 8 web, job `ba2cf850cf254b948d4fb76c9aa3dc8b` | GPU 0 | 12,70 | 2.424 frame, tracker tự cài, center, appearance ReID |
 | Baseline Ultralytics | GPU 0 | 22,79 | Phép so sánh lịch sử; cấu hình không lưu hash |
 | ByteTrack tự cài | GPU 0 | 12,04 | Cùng lượt so sánh lịch sử |
 | Smoke A–F | CPU | 2,59–2,67 | 30 frame/preset |
@@ -1440,12 +1554,15 @@ Các số FPS không nên so sánh trực tiếp nếu khác phiên bản mã, R
 | Nhóm nguyên nhân | Biểu hiện có thể gặp | Bằng chứng hiện có | Thống kê lỗi |
 |---|---|---|---|
 | Detector/đèn | Mất detection đèn, nhầm màu do ROI/ánh sáng | Có frame `unknown` trong summary một số job | Chưa gán nhãn chuẩn |
-| Tracking | Mất ID/đổi ID khi che khuất | Có module lifecycle/stitching; chưa có GT MOT | Chưa định lượng |
+| Nhãn dữ liệu | Một bbox có thể gộp nhiều đối tượng | Đã rà một tile validation: nhãn tham chiếu bao hai xe buýt, dự đoán tách thành hai hộp; cần kiểm tra lại annotation nguồn | Một ví dụ quan sát, chưa thống kê toàn bộ |
+| Tracking | Mất ID/đổi ID khi che khuất | Test 6 ReID nối xe xanh qua `track_id` 1, 65, 67; chưa có GT MOT | Chưa định lượng |
 | Cấu hình hình học | ROI/vạch/hướng không khớp góc camera | Config được vẽ riêng theo video | Chưa tổng hợp lỗi theo clip |
 | Quyết định sự kiện | Bỏ sót/báo giả/trùng | Có sự kiện AI trong summary | Chưa phân loại vì thiếu GT |
 
-**Hình 3.13. Ca thất bại điển hình: che khuất, mất track hoặc nhận sai đèn**
-*Cần trích frame có lỗi đã được người rà soát xác nhận; không có bộ ảnh lỗi đã gán nhãn trong hồ sơ hiện tại.*
+**Hình 3.13. Ví dụ sai khác giữa nhãn validation và dự đoán**
+![Đối chiếu nhãn validation và dự đoán ở tile có hai xe buýt](figures/validation_label_prediction_mismatch.png)
+
+*Quan sát một tile cho thấy một bbox nhãn tham chiếu bao hai xe buýt, trong khi mô hình dự đoán hai bbox riêng. Đây là sai khác cần rà soát lại với dữ liệu gán nhãn nguồn, có thể là lỗi annotation; chưa được tính thành lỗi detector hay dùng để suy rộng chất lượng mô hình.*
 
 
 ### 3.10.2. Ưu điểm và nhược điểm
@@ -1465,9 +1582,9 @@ Các số FPS không nên so sánh trực tiếp nếu khác phiên bản mã, R
 - Lớp car chiếm tỷ lệ bbox cao hơn rõ rệt; lớp yellow ít hơn. Trọng số loss giảm phần nào ảnh hưởng mất cân bằng nhưng không thay thế việc bổ sung dữ liệu khó và đánh giá per-class.
 - Ở giai đoạn Roboflow, thứ tự lớp khác YAML clean trên máy; nếu không đối chiếu theo tên, sai ID có thể làm hỏng huấn luyện/inference. Training script hiện kiểm tra export order, nhưng bản báo cáo và quy trình phát hành dataset cần lưu mapping và version.
 - Đèn nhỏ, ROI lệch, crop quá chặt hoặc ánh sáng thay đổi có thể làm detector không trả tín hiệu; sau hai giây mất detection, trạng thái chủ động chuyển sang `unknown`.
-- Cả hai tracker kế thừa giới hạn của detector và có thể đổi ID khi che khuất hoặc xe đi gần nhau. Module tự cài có các tùy chọn biou, directional gating và NSA Kalman nhưng chưa có ground truth MOT để kết luận chúng cải thiện độ chính xác. Phép so sánh Test 6 hiện chỉ kiểm tra baseline với các cờ tắt và chứng minh hai triển khai cho kết quả trùng trong điều kiện chạy đã cố định; điều này không chứng minh chất lượng tổng quát. FPS bản tự cài còn thấp hơn API trong lần đo này.
-- Kết quả smoke A–F chỉ chạy 30 frame trên CPU; các cải tiến ablation chưa được đánh giá trên tập video dài có ground truth. Giao diện web cho chọn hai backend tracker nhưng chưa bật các cờ cải tiến ablation của tracker tự cài.
-- Nối track được kiểm thử bằng chuỗi giả và đã chạy trên toàn Test 6, nhưng lần chạy video không tạo trường hợp ghép lại thỏa các ngưỡng hiện tại. ROI lưu cho Test 6 cũng chưa có `QUEUE_ZONE_POLYGON`, nên vòng đời theo tín hiệu mới được kiểm tra bằng chuỗi giả. Cần cấu hình vùng/histogram phù hợp và đánh giá trên tập MOT/vi phạm có ground truth trước khi kết luận cải thiện.
+- Cả hai tracker kế thừa giới hạn của detector và có thể đổi ID khi che khuất hoặc xe đi gần nhau. Web hiện bật heuristic appearance ReID khi dùng tracker tự cài; lượt Test 6 cuối đã nối một xe qua ba `track_id`. Tuy nhiên, histogram HSV không phải mô hình ReID đã huấn luyện, có thể nhầm xe cùng màu, và chưa có ground truth MOT để định lượng IDF1/IDSW hoặc kết luận mức cải thiện tổng quát. Directional gating, BIoU và NSA Kalman vẫn chưa được đánh giá định lượng trên ground truth.
+- Kết quả smoke A–F chỉ chạy 30 frame trên CPU; các cải tiến ablation chưa được đánh giá trên tập video dài có ground truth. Giao diện web dùng appearance ReID với tracker tự cài, nhưng các cờ BIoU, directional gating, NSA Kalman, signal lifecycle và stitch vẫn không bật mặc định.
+- Lượt ReID cuối xử lý đủ 1.771 frame Test 6 và khôi phục `object_id=1` qua các track 1, 65, 67. Đây mới là kiểm chứng chức năng trên một clip, không chứng minh độ chính xác đối tượng hoặc giảm ID switch trên các tình huống khác. ROI Test 6 không có `QUEUE_ZONE_POLYGON`, nên vòng đời theo tín hiệu chưa được kiểm chứng trong video.
 - Điểm kiểm tra mặc định là tâm hộp; có thể chọn tâm cạnh dưới để gần điểm tiếp xúc mặt đường hơn, nhưng điểm này vẫn chỉ là xấp xỉ và có thể chưa phản ánh chính xác vị trí bánh trước.
 - Luật giao cắt phụ thuộc vào hai đầu vạch và hướng cấu hình bằng tay. Camera rung, thay đổi khung hoặc vạch bị che có thể làm sai kết quả.
 - Chưa có số liệu test mAP độc lập và bộ ground truth vi phạm; do đó chưa thể tuyên bố hệ thống đạt một tỷ lệ chính xác cụ thể.
@@ -1480,15 +1597,15 @@ Video giao thông có thể chứa biển số và thông tin nhận dạng cá 
 
 ## 3.11. Tổng hợp và đánh giá kết quả
 
-Hệ thống đã có các thành phần chính theo yêu cầu: nhận video, cấu hình ROI/vạch, phát hiện phương tiện và đèn, theo dõi ID, kiểm tra điều kiện giao cắt, xuất video/báo cáo và hỗ trợ rà soát qua CLI/web. Mô hình detector có kết quả validation và pipeline đã xử lý các video thử nghiệm được lưu trong dự án. Tuy nhiên, các lần chạy hiện có chỉ xác nhận hoạt động kỹ thuật trong những cấu hình cụ thể; do chưa có ground truth độc lập nên chưa thể kết luận độ chính xác của tracker hoặc tỷ lệ phát hiện đúng sự kiện. Các yêu cầu chưa thể đánh giá định lượng gồm chất lượng sự kiện theo điều kiện camera, độ nhạy tham số và tỷ lệ lỗi. Vì vậy, kết quả phù hợp với mục tiêu xây dựng nguyên mẫu hỗ trợ rà soát, chưa đủ căn cứ cho triển khai tự động ra quyết định.
+Hệ thống đã có các thành phần chính theo yêu cầu: nhận video, cấu hình ROI/vạch, phát hiện phương tiện và đèn, theo dõi track, duy trì `object_id` qua một số lần mất dấu bằng appearance ReID, kiểm tra điều kiện giao cắt, xuất video/báo cáo và hỗ trợ rà soát qua CLI/web. Trong lượt Test 6 ReID cuối, xe xanh được nối với `object_id=1` qua `track_id` 1, 65, 67; toàn bộ 1.771 frame được xử lý ở 24,38 FPS và có ba sự kiện AI. Ở lượt đối chiếu bổ sung dùng tâm bbox, người dùng xác nhận trực quan cả ba sự kiện đều đúng; tuy vậy, nhãn hiện có chưa bao phủ các đoạn âm tính và chưa đủ ID MOT để tính chỉ số toàn video. Chất lượng theo điều kiện camera, độ nhạy tham số và tỷ lệ lỗi cũng chưa được đánh giá. Vì vậy, kết quả phù hợp với nguyên mẫu hỗ trợ rà soát, chưa đủ căn cứ cho triển khai tự động ra quyết định.
 
 # KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 
 ## 1. Kết quả đạt được
 
-Đồ án đã xây dựng được pipeline phân tích video giao thông gồm phát hiện xe/đèn, theo dõi ID xe bằng ByteTrack tích hợp hoặc module ByteTrack tự cài, cấu hình ROI, kiểm tra giao cắt vạch và lưu bằng chứng. Giao diện web hiện cho phép chọn backend tracker và lưu lựa chọn theo job; các cải tiến association/lifecycle/stitching nâng cao vẫn chỉ cấu hình qua CLI. Trên Test 6, phép so sánh baseline ghi nhận hai tracker cho cùng 19 ID đủ điều kiện, cùng ba frame sự kiện và cùng kết quả ghép ID/hộp khi dùng chung confidence; đây là kết quả trong một cấu hình thử, không phải đánh giá theo ground truth. Bộ dữ liệu sáu lớp được gộp theo YAML trên máy, kiểm tra annotation YOLO và tạo báo cáo clean. Bộ clean có 11.672 ảnh gắn nhãn với 31.509 bbox hợp lệ; sau đó dữ liệu được lưu trên Roboflow và export lại để train với class order của export.
+Đồ án đã xây dựng được pipeline phân tích video giao thông gồm phát hiện xe/đèn, theo dõi track và duy trì `object_id` qua appearance ReID khi dùng tracker ByteTrack tự cài, cấu hình ROI, kiểm tra giao cắt vạch và lưu bằng chứng. Web bật ReID mặc định cho tracker tự cài; các cải tiến association/lifecycle khác vẫn được cấu hình riêng. Trên Test 6, lượt ReID cuối nối xe xanh qua ba `track_id` và xử lý đủ 1.771 frame; phép so sánh baseline trước đó ghi nhận hai tracker cho cùng 19 ID đủ điều kiện và cùng ba frame sự kiện trong một cấu hình thử. Cả hai kết quả không phải đánh giá theo ground truth. Bộ dữ liệu sáu lớp được gộp theo YAML trên máy, kiểm tra annotation YOLO và tạo báo cáo clean. Bộ clean có 11.672 ảnh gắn nhãn với 31.509 bbox hợp lệ; sau đó dữ liệu được lưu trên Roboflow và export lại để train với class order của export.
 
-Checkpoint được huấn luyện 70 epoch. Hồ sơ validation ghi Precision 0,92017, Recall 0,84876, mAP50 0,91845 và mAP50–95 0,68871 ở epoch 70. Lần chạy video mẫu đã xử lý 950/950 frame ở 11,49 FPS trên GPU 0, ghi nhận 7 ID và không ghi nhận vi phạm. Đây là đầu ra của một lần suy luận, không thay thế đánh giá bằng nhãn chuẩn.
+Checkpoint được huấn luyện 70 epoch. Hồ sơ validation ghi Precision 0,92017, Recall 0,84876, mAP50 0,91845 và mAP50–95 0,68871 ở epoch 70. Lượt CLI trước ReID trong `Output/` xử lý 1.771/1.771 frame ở 25,86 FPS, ghi nhận 19 ID và ba sự kiện AI. Lượt ReID cuối xử lý đủ 1.771 frame ở 24,38 FPS, ghi nhận 29 track, 23 object và ba sự kiện AI; xe xanh giữ `object_id=1` qua các track 1, 65, 67. Riêng lượt bổ sung dùng tracker tự cài và tâm bbox, người dùng xác nhận trực quan 3/3 sự kiện dương tính đã gán nhãn; xác nhận này không áp dụng cho lượt ReID cuối hay các lần chạy khác, và chưa thay thế đánh giá toàn video.
 
 **Bảng K.1. Việc đã hoàn thành và nội dung chưa hoàn thành**
 
@@ -1498,13 +1615,13 @@ Checkpoint được huấn luyện 70 epoch. Hồ sơ validation ghi Precision 0
 | Huấn luyện detector và validation | Hoàn thành; chưa có đánh giá test độc lập |
 | Pipeline CLI/web, ROI và event output | Đã triển khai |
 | Tracker tự cài và preset A–F | Đã triển khai; smoke 30 frame, chưa đánh giá MOT ground truth |
-| Bộ ground truth sự kiện/tracking | Chưa có |
+| Ground truth Test 6 | Có ba sự kiện dương tính; lượt bổ sung được xác nhận trực quan 3/3, nhưng cần hoàn thiện nhãn âm tính/track trước khi tính chỉ số toàn video |
 | Quét độ nhạy tham số và thống kê lỗi | Chưa thực hiện |
 | Đối chiếu hiệu lực pháp luật, biểu mẫu và hình minh họa | Cần hoàn thiện trước khi nộp |
 
 ## 2. Hạn chế
 
-Các hạn chế chính là chưa có tập ground truth cho sự kiện vi phạm và MOT, chất lượng nhận diện đèn còn nhạy với ROI/crop, class order khác giữa YAML clean và export, phân bố lớp chưa cân bằng, tracker có thể đổi ID, và tọa độ tâm hộp chưa phản ánh điểm tiếp xúc của xe với mặt đường. Cấu hình ROI được vẽ thủ công, nên cần được kiểm tra trên toàn video trước khi chạy chính thức.
+Các hạn chế chính là ground truth Test 6 mới chỉ có ba sự kiện dương tính; lượt bổ sung được xác nhận trực quan đúng cả ba, nhưng chưa đủ để đánh giá bỏ sót/báo giả toàn video hoặc chất lượng MOT. Chất lượng nhận diện đèn còn nhạy với ROI/crop, class order khác giữa YAML clean và export, phân bố lớp chưa cân bằng, tracker có thể đổi ID, và tọa độ tâm hộp chưa phản ánh điểm tiếp xúc của xe với mặt đường. Cấu hình ROI được vẽ thủ công, nên cần được kiểm tra trên toàn video trước khi chạy chính thức.
 
 ## 3. Hướng phát triển
 
@@ -1554,27 +1671,30 @@ Các hạn chế chính là chưa có tập ground truth cho sự kiện vi ph�
 | Tệp/thư mục | Phần mã nguồn nên trích hoặc tham chiếu |
 |---|---|
 | `Code/06_run_detection.py` | Pipeline detector, tracking, trạng thái đèn, giao cắt, summary/CSV |
-| `tracker/` | Kalman, association, trạng thái track, lifecycle, stitching và preset |
+| `tracking/custom_bytetrack/` | Kalman, association, trạng thái track, lifecycle, stitching và preset |
+| `tracking/reid/` | Histogram HSV phục vụ appearance matching |
+| `tracking/ultralytics_tracker/` | Adapter cho tracker ByteTrack tích hợp Ultralytics |
 | `scripts/run_ablation.py` | Điều phối chạy A–F và lưu kết quả từng preset |
 | `web_app.py`, `web_worker.py` | API, job, worker và luồng tiến độ của web |
 | `Code/05_roi_config.py` | Công cụ cấu hình ROI/vạch trên frame |
-| `C:\Users\ADMIN\Downloads\DATA\XuLyData\01_merge_truck_bus_into_nhandien.py` | Ghép nguồn bus/truck vào bộ dữ liệu phương tiện và chuẩn hóa class ID |
-| `C:\Users\ADMIN\Downloads\DATA\XuLyData\02_merge_with_traffic_light.py` | Lấy mẫu dữ liệu đèn, ghép thành bộ sáu lớp và remap nhãn |
-| `C:\Users\ADMIN\Downloads\DATA\XuLyData\03_data_cleaning.py` | Kiểm tra và làm sạch nhãn YOLO, xuất báo cáo clean |
+| `TRAIN_DATA_ROOT\01_merge_truck_bus_into_nhandien.py` | Ghép nguồn bus/truck vào bộ dữ liệu phương tiện và chuẩn hóa class ID |
+| `TRAIN_DATA_ROOT\02_merge_with_traffic_light.py` | Lấy mẫu dữ liệu đèn, ghép thành bộ sáu lớp và remap nhãn |
+| `TRAIN_DATA_ROOT\03_data_cleaning.py` | Kiểm tra và làm sạch nhãn YOLO, xuất báo cáo clean |
 
 Không chép toàn bộ source code vào nội dung chính; lựa chọn các đoạn tiêu biểu, ghi rõ tên tệp, phiên bản và vị trí trong phụ lục theo yêu cầu của Khoa.
 
 ### A.2. Các đường dẫn quan trọng
 
-- Dữ liệu clean tại máy: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Final_cleaned\`
-- YAML clean tại máy: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Final_cleaned\data.yaml`
-- Thư mục xử lý và script ghép/clean: `C:\Users\ADMIN\Downloads\DATA\XuLyData\` (`01_merge_truck_bus_into_nhandien.py`, `02_merge_with_traffic_light.py`, `03_data_cleaning.py`)
+- Thư mục làm việc xử lý dữ liệu: `TRAIN_DATA_ROOT\`
+- Dữ liệu huấn luyện tải từ Roboflow: `TRAIN_DATA_ROOT\Train\`
+- Các thư mục dataset trong repository ổ D: bản tham chiếu/minh họa, không dùng làm đầu vào train.
+- Thư mục xử lý và script ghép/clean: `TRAIN_DATA_ROOT\` (`01_merge_truck_bus_into_nhandien.py`, `02_merge_with_traffic_light.py`, `03_data_cleaning.py`)
 - Project Roboflow lưu dataset sau clean: `DATADOANNEW`
-- Dataset Roboflow export dùng train: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\datasets\export-yolo26\`
-- YAML train: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\datasets\export-yolo26\data.yaml`
-- Hồ sơ train: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\runs\do_an_tn\args.yaml`
-- Kết quả theo epoch: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\runs\do_an_tn\results.csv`
-- Checkpoint train: `C:\Users\ADMIN\Downloads\DATA\XuLyData\Train\runs\do_an_tn\weights\best.pt`
+- Dataset Roboflow export dùng train: `TRAIN_DATA_ROOT\Train\datasets\export-yolo26\`
+- YAML train: `TRAIN_DATA_ROOT\Train\datasets\export-yolo26\data.yaml`
+- Hồ sơ train: `TRAIN_DATA_ROOT\Train\runs\do_an_tn\args.yaml`
+- Kết quả theo epoch: `TRAIN_DATA_ROOT\Train\runs\do_an_tn\results.csv`
+- Checkpoint train: `TRAIN_DATA_ROOT\Train\runs\do_an_tn\weights\best.pt`
 - Checkpoint project: `models/best.pt`
 
 ### A.3. Chạy CLI
@@ -1611,9 +1731,9 @@ Sau đó dùng đúng config:
 
 - Họ tên, mã sinh viên, lớp và giảng viên hướng dẫn.
 - Phiếu giao nhiệm vụ, kế hoạch, theo dõi tiến độ và chữ ký theo yêu cầu Khoa.
-- Ảnh chụp môi trường phần cứng thực tế dùng train (CPU/GPU/RAM) và phiên bản Python/PyTorch/CUDA; chỉ điền khi kiểm tra được từ máy train.
-- Hình ảnh pipeline, giao diện ROI, video gắn nhãn, ví dụ đúng/sai và confusion matrix.
-- Kết quả đánh giá trên tập test; kết quả gán nhãn chuẩn và rà soát sự kiện video.
+- Ảnh chụp/log môi trường tại đúng thời điểm huấn luyện để xác nhận lịch sử OS/driver và cấu hình máy; hiện Bảng 3.9 chỉ ghi thông tin đọc từ máy lưu artifacts và virtual environment hiện còn.
+- Ảnh chụp riêng giao diện web/công cụ cấu hình ROI; báo cáo hiện đã có sơ đồ, ảnh đầu ra video và hình kết quả detector, nhưng chưa có screenshot giao diện.
+- Bổ sung ground truth đầy đủ và quy ước frame/ID nếu muốn tính chỉ số test, TP/FN/FP hoặc chỉ số MOT; các video web hiện đã được rà soát trực quan nhưng chưa có bộ nhãn chuẩn tương ứng.
 - Xác nhận với giảng viên về trích dẫn pháp lý, tên đề tài và quy định trình bày hiện hành.
 
 ## PHỤ LỤC B. CẤU HÌNH HUẤN LUYỆN VÀ ROI MẪU
@@ -1647,9 +1767,14 @@ Các số liệu sau lấy từ summary và metrics đã lưu trong workspace. C
 | `samples/video.mp4` | 950 | 11,49 | 7 | 0 | Summary project hiện hành |
 | Test 6, 03/11/2026 | 1.771 | 13,25 | 19 | 3 | Checkpoint đường dẫn cũ không còn |
 | Test 6, web 09/11/2026 | 1.771 | 10,95 | 19 | 3 | Ultralytics, `track_conf=0,25` |
+| Test 6, ReID cuối 15/11/2026 | 1.771 | 24,38 | 29 track / 23 object | 3 | ByteTrack tự cài, `track_conf=0,1`, `appearance_reid`; xe xanh `object_id=1` liên kết track 1/65/67 |
+| Test 6 Demo, web ReID 15/11/2026 | 1.771 | 10,82 | 39 track / 33 object | 3 | ByteTrack tự cài, điểm `center`; người dùng đã xem trực quan |
+| Test 7, web ReID 16/11/2026 | 2.163 | 12,81 | 36 track / 29 object | 1 | ByteTrack tự cài, điểm `center`; người dùng đã xem trực quan |
+| Test 8, web ReID 16/11/2026 | 2.424 | 12,70 | 29 track / 21 object | 0 | ByteTrack tự cài, điểm `center`; người dùng đã xem trực quan |
+| Test 6 có ground truth, ByteTrack tự cài + center 16/11/2026 | 1.771 | 23,32 | 18 track / 18 object | 3 | Lượt bổ sung; sự kiện lệch nhãn +12, +12, +29 frame, chưa phân loại đúng/sai |
 
 Các kết quả chi tiết của smoke A–F nằm ở Bảng 3.19 (30 frame cho mỗi preset). Các sự kiện trong bảng này là đầu ra AI, không phải số vi phạm đã được xác nhận.
 
 ## PHỤ LỤC D. HÌNH ẢNH BỔ SUNG
 
-Các hình huấn luyện được lưu kèm tại `docs/figures/`: `results.png`, `BoxPR_curve.png` và `confusion_matrix.png`. Hình chụp CCTV, ROI, track qua vạch, tình huống nối track và ca thất bại cần bổ sung sau khi chọn video phù hợp, xác nhận quyền sử dụng và làm mờ biển số.
+Các hình được dùng trong nội dung báo cáo lưu tại `docs/figures/`, gồm sơ đồ kiến trúc, phân bố dữ liệu, kết quả detector, ví dụ nhãn, sự kiện/track Test 6 và sai khác validation. Ảnh chụp giao diện web chưa được lưu; trước khi phát hành báo cáo cần xác nhận quyền sử dụng video nguồn và rà soát che biển số/thông tin nhận dạng trong mọi hình CCTV.
